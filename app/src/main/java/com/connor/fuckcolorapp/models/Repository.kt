@@ -50,7 +50,7 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
                     BuildConfig.APPLICATION_ID
                 )
             }
-            "Success: ".logCat()
+            "Disable $packageName Success".logCat()
         }.onFailure {
             "ERROR: ${it.message}".logCat()
         }
@@ -65,7 +65,7 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
                     }
                     (waitFor() == 0 ).also {
                         destroy()
-                        "uninstallApp Success".logCat()
+                        "uninstall $packageName Success".logCat()
                     }
                 }
         }.onFailure {
