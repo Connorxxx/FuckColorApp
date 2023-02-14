@@ -3,10 +3,7 @@ package com.connor.fuckcolorapp
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkManager
+import androidx.work.*
 import com.connor.fuckcolorapp.databinding.ActivityMainBinding
 import com.connor.fuckcolorapp.viewmodels.MainViewModel
 import com.connor.fuckcolorapp.work.PackageWorker
@@ -16,6 +13,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val request by lazy {
+        OneTimeWorkRequestBuilder<PackageWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setInputData(workDataOf("PACKAGE_NAME" to "com.connor.launcher"))
+            .build()
+    }
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -25,11 +28,9 @@ class MainActivity : AppCompatActivity() {
         binding.btnTest.setOnClickListener {
             viewModel.disableApp("com.connor.launcher")
         }
-        val request = OneTimeWorkRequestBuilder<PackageWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST).build()
-
         binding.btnUninstall.setOnClickListener {
-           // viewModel.uninstallApp("com.connor.launcher")
-            WorkManager.getInstance(this).enqueue(request)
+            if (viewModel.permissionState.value)
+                WorkManager.getInstance(this).enqueue(request);
         }
     }
 }

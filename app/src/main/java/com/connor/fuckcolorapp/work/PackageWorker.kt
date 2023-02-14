@@ -18,7 +18,9 @@ class PackageWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        repository.uninstallApp("com.connor.launcher")
+        inputData.getString("PACKAGE_NAME")?.let {
+            repository.uninstallApp(it)
+        }
         "doWork Success".logCat()
         return Result.success()
     }
