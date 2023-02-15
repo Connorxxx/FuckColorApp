@@ -28,7 +28,7 @@ class AppListViewModel @Inject constructor(
     init {
         val pm = application.packageManager
         viewModelScope.launch {
-            repository.queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
+            repository.queryPackage(PackageManager.MATCH_ALL).also { query ->
                 query.forEach {
                     appList.add(AppInfo(it.loadLabel(pm), it.activityInfo.packageName, it.loadIcon(pm)))
                 }

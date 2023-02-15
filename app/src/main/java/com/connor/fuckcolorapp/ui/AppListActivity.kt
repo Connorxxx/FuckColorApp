@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -42,6 +43,7 @@ class AppListActivity : AppCompatActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.appListState.collect {
+                    binding.progressLoad.isVisible = it == AppLoad.Loading
                     when (it) {
                         is AppLoad.Loading -> {}
                         is AppLoad.Loaded -> {
