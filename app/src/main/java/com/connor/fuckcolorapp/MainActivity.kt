@@ -9,8 +9,10 @@ import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.databinding.ActivityMainBinding
 import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.showToast
+import com.connor.fuckcolorapp.extension.startActivity
 import com.connor.fuckcolorapp.extension.startService
 import com.connor.fuckcolorapp.services.PackageService
+import com.connor.fuckcolorapp.ui.AppListActivity
 import com.connor.fuckcolorapp.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -36,6 +38,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.btnList.setOnClickListener {
             viewModel.queryPackage()
+        }
+        binding.btnOpen.setOnClickListener {
+            startActivity<AppListActivity> {  }
         }
         lifecycleScope.launch {
             receiveEvent<String>(Consts.CHECK_FALSE) {

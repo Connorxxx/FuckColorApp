@@ -21,3 +21,9 @@ inline fun <reified T> Context.startService(block: Intent.() -> Unit) {
     intent.block()
     startService(intent)
 }
+
+inline fun <reified T> Context.startActivity(block: Intent.() -> Unit) {
+    val intent = Intent(this, T::class.java)
+    intent.block()
+    startActivity(intent)
+}

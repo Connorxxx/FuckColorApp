@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".MainActivity">
 
     <Button
@@ -35,5 +36,14 @@
         app:layout_constraintTop_toBottomOf="@id/btn_uninstall"
         android:layout_margin="24dp"
         android:text="List App" />
+
+    <Button
+        android:id="@+id/btn_open"
+        android:text="Open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="@id/btn_list"
+        app:layout_constraintTop_toBottomOf="@id/btn_list"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

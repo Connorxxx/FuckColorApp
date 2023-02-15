@@ -18,7 +18,7 @@
         android:theme="@style/Theme.FuckColorApp"
         tools:targetApi="31">
         <activity
-            android:name=".AppListActivity"
+            android:name=".ui.AppListActivity"
             android:exported="false" />
 
         <service
