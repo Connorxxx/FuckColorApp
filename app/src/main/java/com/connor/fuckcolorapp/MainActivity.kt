@@ -25,11 +25,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.btnTest.setOnClickListener {
-            viewModel.disableApp("com.connor.launcher")
+           // viewModel.disableApp("com.connor.launcher")
         }
         binding.btnUninstall.setOnClickListener {
             startService<PackageService> {
                 putExtra("uninstall_package", "com.connor.launcher")
+                putExtra("disable_package","com.connor.moviecat")
             }
         }
         binding.btnList.setOnClickListener {

@@ -15,15 +15,15 @@ import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.models.Repository
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @AndroidEntryPoint
 class PackageService : LifecycleService() {
 
-    @Inject lateinit var repository: Repository
+    @Inject
+    lateinit var repository: Repository
 
     override fun onCreate() {
         super.onCreate()
@@ -45,13 +45,22 @@ class PackageService : LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        lifecycleScope.launch(Dispatchers.IO) {
-            intent?.extras?.getString("uninstall_package")?.let {
-                val result = withContext(Dispatchers.IO) { repository.uninstallAppWithCheck(it) }
-                result.logCat()
-                stopSelf()
-            }
+        val uninstall = intent?.extras?.getString("uninstall_package") ?: ""
+        val disable = intent?.extras?.getString("disable_package") ?: ""
+
+        lifecycleScope.launch {
+            doAsync(uninstall, disable)
+            stopSelf()
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private suspend fun doAsync(uninstall: String, disable: String) = coroutineScope {
+        val uninstallResult = async { repository.uninstallAppWithCheck(uninstall) }
+        val disableResult = async { repository.disableApp(disable) }
+        withContext(Dispatchers.IO) {
+            uninstallResult.await()
+            disableResult.await()
+        }
     }
 }
