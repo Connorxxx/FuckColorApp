@@ -46,9 +46,11 @@ class PackageService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         lifecycleScope.launch(Dispatchers.IO) {
-            val result = withContext(Dispatchers.IO) { repository.uninstallAppWithCheck("com.connor.launcher") }
-            result.logCat()
-            stopSelf()
+            intent?.extras?.getString("uninstall_package")?.let {
+                val result = withContext(Dispatchers.IO) { repository.uninstallAppWithCheck(it) }
+                result.logCat()
+                stopSelf()
+            }
         }
         return super.onStartCommand(intent, flags, startId)
     }

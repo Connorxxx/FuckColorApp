@@ -28,7 +28,9 @@ class MainActivity : AppCompatActivity() {
             viewModel.disableApp("com.connor.launcher")
         }
         binding.btnUninstall.setOnClickListener {
-            startService<PackageService> {}
+            startService<PackageService> {
+                putExtra("uninstall_package", "com.connor.launcher")
+            }
         }
         binding.btnList.setOnClickListener {
             viewModel.queryPackage()
