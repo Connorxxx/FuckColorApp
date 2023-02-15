@@ -6,9 +6,12 @@ import androidx.work.CoroutineWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.connor.fuckcolorapp.extension.logCat
+import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.models.Repository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @HiltWorker
 class PackageWorker @AssistedInject constructor(
@@ -19,7 +22,9 @@ class PackageWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         inputData.getString("PACKAGE_NAME")?.let {
-            repository.uninstallApp(it)
+            repository.uninstallAppWithCheck(it).also { b ->
+                b.logCat()
+            }
         }
         "doWork Success".logCat()
         return Result.success()

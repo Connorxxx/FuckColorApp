@@ -1,29 +1,39 @@
 package com.connor.fuckcolorapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.connor.fuckcolorapp.extension.logCat
+import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.models.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import java.util.logging.Handler
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    private val _permissionState = MutableStateFlow(false)
-    val permissionState = _permissionState.asStateFlow()
-
     init {
-        _permissionState.value = repository.checkPermission()
+        repository.checkPermission()
     }
 
     fun disableApp(packageName: String) {
-        if (permissionState.value)
-            repository.disableApp(packageName);
+        repository.disableAppWithCheck(packageName)
     }
 
     fun uninstallApp(packageName: String) {
-        if (permissionState.value)
-            repository.uninstallApp(packageName);
+       // repository.uninstallApp(packageName)
     }
+
+    fun queryPackage() {
+        viewModelScope.launch {
+            repository.queryPackageWithCheck()
+        }
+
+    }
+
 }
