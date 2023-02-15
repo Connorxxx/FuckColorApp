@@ -17,12 +17,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FuckColorApp"
         tools:targetApi="31">
+        <activity
+            android:name=".AppListActivity"
+            android:exported="false" />
+
         <service
             android:name=".services.PackageService"
             android:enabled="true"
-            android:exported="true">
-
-        </service>
+            android:exported="true"></service>
 
         <activity
             android:name=".MainActivity"

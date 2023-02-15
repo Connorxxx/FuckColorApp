@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.connor.core.receiveEvent
+import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.databinding.ActivityMainBinding
 import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.showToast
@@ -25,23 +26,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.btnTest.setOnClickListener {
-           // viewModel.disableApp("com.connor.launcher")
+            // viewModel.disableApp("com.connor.launcher")
         }
         binding.btnUninstall.setOnClickListener {
             startService<PackageService> {
                 putExtra("uninstall_package", "com.connor.launcher")
-                putExtra("disable_package","com.connor.moviecat")
+                putExtra("disable_package", "com.connor.moviecat")
             }
         }
         binding.btnList.setOnClickListener {
             viewModel.queryPackage()
         }
         lifecycleScope.launch {
-            launch {
-                receiveEvent<String>("checkFalse") {
-                    it.logCat()
-                    it.showToast()
-                }
+            receiveEvent<String>(Consts.CHECK_FALSE) {
+                it.logCat()
+                it.showToast()
+            }
+            receiveEvent<String>(Consts.PURE_APP) {
+                it.showToast()
             }
         }
     }

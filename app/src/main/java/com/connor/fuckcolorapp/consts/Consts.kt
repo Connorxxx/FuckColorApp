@@ -8,4 +8,5 @@ object Consts {
 
     //TAG
     const val CHECK_FALSE = "checkFalse"
+    const val PURE_APP = "pureApp"
 }

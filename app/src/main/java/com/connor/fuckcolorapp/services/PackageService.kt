@@ -6,18 +6,17 @@ import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.connor.core.emitEvent
 import com.connor.fuckcolorapp.MainActivity
 import com.connor.fuckcolorapp.R
-import com.connor.fuckcolorapp.extension.logCat
+import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.models.Repository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
 
 @AndroidEntryPoint
 class PackageService : LifecycleService() {
@@ -50,6 +49,7 @@ class PackageService : LifecycleService() {
 
         lifecycleScope.launch {
             doAsync(uninstall, disable)
+            emitEvent("Finish", Consts.PURE_APP)
             stopSelf()
         }
         return super.onStartCommand(intent, flags, startId)

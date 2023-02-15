@@ -85,23 +85,24 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
     }
 
     suspend fun queryPackageWithCheck() = checkShizuku { queryPackage() }
-    suspend fun queryPackage(): MutableList<ResolveInfo> = withContext(Dispatchers.IO) {
-        val pm = context.packageManager
-        val i = Intent(Intent.ACTION_MAIN, null)
-        i.addCategory(Intent.CATEGORY_LAUNCHER)
-        if (TargetApi.T) {
-            pm.queryIntentActivities(
-                i,
-                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_SYSTEM_ONLY.toLong())
-            ).onEach {
-                it.activityInfo.packageName.logCat()
-            }
-        } else {
-            pm.queryIntentActivities(i, PackageManager.MATCH_ALL).onEach {
-                //  it.packageName.logCat()
+    suspend fun queryPackage(flags: Int = PackageManager.MATCH_ALL): MutableList<ResolveInfo> =
+        withContext(Dispatchers.IO) {
+            val pm = context.packageManager
+            val i = Intent(Intent.ACTION_MAIN, null)
+            i.addCategory(Intent.CATEGORY_LAUNCHER)
+            if (TargetApi.T) {
+                pm.queryIntentActivities(
+                    i,
+                    PackageManager.ResolveInfoFlags.of(flags.toLong())
+                ).onEach {
+                    it.activityInfo.packageName.logCat()
+                }
+            } else {
+                pm.queryIntentActivities(i, flags).onEach {
+                    //  it.packageName.logCat()
+                }
             }
         }
-    }
 
 
     private fun asInterface(className: String, serviceName: String): Any =
@@ -123,7 +124,7 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
     private inline fun <T> checkShizuku(block: () -> T): T {
         checkPermission().also {
             if (!it) {
-                emitEvent("Error Check Shizuku", "checkFalse")
+                emitEvent("Error Check Shizuku", Consts.CHECK_FALSE)
             }
             return block()
         }
