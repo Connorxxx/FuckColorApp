@@ -17,22 +17,26 @@ import javax.inject.Inject
 @HiltViewModel
 class AppListViewModel @Inject constructor(
     private val repository: Repository,
-    application: Application
+    application: Application,
+    val appList: ArrayList<AppInfo>
 ) : ViewModel() {
 
-    val appList = ArrayList<AppInfo>()
+    //val appList = ArrayList<AppInfo>()
 
     private val _appListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
     val appListState = _appListState.asStateFlow()
 
     init {
-        val pm = application.packageManager
         viewModelScope.launch {
-            repository.queryPackage(PackageManager.MATCH_ALL).also { query ->
-                query.forEach {
-                    appList.add(AppInfo(it.loadLabel(pm), it.activityInfo.packageName, it.loadIcon(pm)))
+            if (appList.isEmpty()) {
+                val pm = application.packageManager
+                repository.queryPackage(PackageManager.MATCH_ALL).also { query ->
+                    query.forEach {
+                        appList.add(AppInfo(it.loadLabel(pm), it.activityInfo.packageName, it.loadIcon(pm)))
+                    }
+                    appList.sortBy { list -> list.label.toString() }
                 }
-                appList.sortBy { list -> list.label.toString() }
+                _appListState.emit(AppLoad.Loaded)
             }
             _appListState.emit(AppLoad.Loaded)
         }
