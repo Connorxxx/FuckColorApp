@@ -3,7 +3,10 @@ package com.connor.fuckcolorapp.ui
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.connor.core.receiveEvent
+import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.databinding.ActivityAppsBinding
+import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.extension.startService
 import com.connor.fuckcolorapp.services.PackageService
 import com.connor.fuckcolorapp.ui.adapter.TabPagerAdapter
@@ -36,7 +39,14 @@ class AppsActivity : AppCompatActivity() {
             tab.text = viewModel.titles[position]
         }.attach()
         binding.fabPure.setOnClickListener {
+            viewModel.setLoading()
             startService<PackageService> {  }
+        }
+        receiveEvent<String>(Consts.PURE_APP) {
+            viewModel.getAppsList()
+        }
+        receiveEvent<String>(Consts.CHECK_FALSE) {
+            it.showToast()
         }
     }
 }

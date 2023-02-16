@@ -1,5 +1,7 @@
 package com.connor.fuckcolorapp
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +28,8 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<MainViewModel>()
 
+    private val shizukuPackage by lazy { "moe.shizuku.privileged.api" }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -42,13 +46,21 @@ class MainActivity : AppCompatActivity() {
             viewModel.queryPackage()
         }
         binding.btnOpen.setOnClickListener {
-            startActivity<AppsActivity> { }
+            viewModel.checkShizuku {
+                startActivity<AppsActivity> { }
+            }
+        }
+        binding.btnShizuku.setOnClickListener {
+            packageManager.getLaunchIntentForPackage(shizukuPackage)
+                ?.let { startActivity(it) }
+                ?: startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=$shizukuPackage")
+                    )
+                )
         }
         receiveEvent<String>(Consts.CHECK_FALSE) {
-            it.logCat()
-            it.showToast()
-        }
-        receiveEvent<String>(Consts.PURE_APP) {
             it.showToast()
         }
     }

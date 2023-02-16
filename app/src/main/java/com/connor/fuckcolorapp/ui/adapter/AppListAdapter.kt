@@ -31,6 +31,11 @@ class AppListAdapter (private val onClick: (AppInfo) -> Unit) :
             binding.checkBox.setOnClickListener {
                 binding.m?.let {
                     onClick(it)
+                    binding.cardApp.setCardBackgroundColor(
+                        if (it.isCheck) App.app.getColor(R.color.primary) else App.app.getColor(
+                            R.color.background
+                        )
+                    )
                 }
             }
         }
@@ -38,11 +43,6 @@ class AppListAdapter (private val onClick: (AppInfo) -> Unit) :
         fun bind(appInfo: AppInfo) {
             binding.m = appInfo
             binding.imgIcon.load(appInfo.icon)
-//            binding.cardApp.setCardBackgroundColor(
-//                if (appInfo.isCheck) App.app.getColor(R.color.primary) else App.app.getColor(
-//                    R.color.background
-//                )
-//            )
         }
     }
 
@@ -58,7 +58,7 @@ class AppListAdapter (private val onClick: (AppInfo) -> Unit) :
 
     override fun onBindViewHolder(holder: AppListAdapter.ViewHolder, position: Int) {
         val repo = getItem(position)
-        repo?.let { holder.bind(it) }
+        holder.bind(repo)
     }
 
 }

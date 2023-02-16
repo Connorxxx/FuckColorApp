@@ -5,10 +5,20 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragment.UserAppFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_user"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_user"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_user"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
 
     <ProgressBar
         android:id="@+id/progress_user"

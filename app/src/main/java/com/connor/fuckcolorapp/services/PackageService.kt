@@ -49,12 +49,13 @@ class PackageService : LifecycleService() {
         val uninstall = intent?.extras?.getString("uninstall_package") ?: ""
         val disable = intent?.extras?.getString("disable_package") ?: ""
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.Default) {
             selectPure()
             //doAsync(uninstall, disable)
-           // emitEvent("Finish", Consts.PURE_APP)
-            "Finish".showToast()
-            stopSelf()
+            withContext(Dispatchers.Main) {
+                emitEvent("Finish", Consts.PURE_APP)
+                stopSelf()
+            }
         }
         return super.onStartCommand(intent, flags, startId)
     }

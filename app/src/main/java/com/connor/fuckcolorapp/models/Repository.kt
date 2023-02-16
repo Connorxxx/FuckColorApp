@@ -121,12 +121,13 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
             else context.packageManager.getPackageInfo(packageName, flags)
         }.getOrNull()
 
-    private inline fun <T> checkShizuku(block: () -> T): T {
+    inline fun <T> checkShizuku(block: () -> T): T? {
         checkPermission().also {
             if (!it) {
                 emitEvent("Error Check Shizuku", Consts.CHECK_FALSE)
             }
-            return block()
+            else return block()
         }
+        return null
     }
 }

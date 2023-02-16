@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.connor.fuckcolorapp.App
+import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.models.AppInfo
 import com.connor.fuckcolorapp.models.Repository
 import com.connor.fuckcolorapp.states.AppLoad
@@ -17,7 +18,9 @@ import com.connor.fuckcolorapp.ui.fragment.UserAppFragment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -26,7 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AppsViewModel @Inject constructor(
     private val repository: Repository,
-    application: Application
+    private val application: Application
 ) : ViewModel() {
 
     private val _appListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
@@ -42,58 +45,70 @@ class AppsViewModel @Inject constructor(
         get() = activityInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
 
     init {
+        if (App.userAppList.isEmpty() || App.systemAppList.isEmpty())
+            getAppsList()
+        else {
+            uploadUser()
+            uploadSystem()
+        }
+    }
+
+    fun getAppsList() {
+        "getAppsList".logCat()
         viewModelScope.launch(Dispatchers.Default) {
+            App.userAppList.clear()
+            App.systemAppList.clear()
             launch {
-                if (App.userAppList.isEmpty()) {
-                    val pm = application.packageManager
-                    repository.queryPackage(PackageManager.MATCH_ALL)
-                        .filter { !it.isSystemApp }
-                        .also { query ->
-                            query.forEach { resolveInfo ->
-                                App.userAppList.add(
-                                    AppInfo(
-                                        resolveInfo.loadLabel(pm),
-                                        resolveInfo.activityInfo.packageName,
-                                        resolveInfo.loadIcon(pm),
-                                        true
-                                    )
-                                )
-                            }
-                            App.userAppList.sortBy { list -> list.label.toString() }
-                        }
-                }
-                _appListState.emit(AppLoad.UserLoaded)
-            }
-            launch {
-                if (App.systemAppList.isEmpty()) {
-                    val pm = application.packageManager
-                    repository.queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
+                val pm = application.packageManager
+                repository.queryPackage(PackageManager.MATCH_ALL)
+                    .filter { !it.isSystemApp }
+                    .also { query ->
                         query.forEach { resolveInfo ->
-                            App.systemAppList.add(
+                            App.userAppList.add(
                                 AppInfo(
                                     resolveInfo.loadLabel(pm),
                                     resolveInfo.activityInfo.packageName,
                                     resolveInfo.loadIcon(pm),
-                                    false
+                                    true
                                 )
                             )
                         }
-                        App.systemAppList.sortBy { list -> list.label.toString() }
+                        App.userAppList.sortBy { list -> list.label.toString() }
                     }
+                _appListState.emit(AppLoad.UserLoaded)
+            }
+            launch {
+                val pm = application.packageManager
+                repository.queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
+                    query.forEach { resolveInfo ->
+                        App.systemAppList.add(
+                            AppInfo(
+                                resolveInfo.loadLabel(pm),
+                                resolveInfo.activityInfo.packageName,
+                                resolveInfo.loadIcon(pm),
+                                false
+                            )
+                        )
+                    }
+                    App.systemAppList.sortBy { list -> list.label.toString() }
                 }
                 _systemListState.emit(AppLoad.SystemLoaded)
             }
         }
     }
 
-    fun uploadUser() {
 
+    fun setLoading() {
+        _appListState.value = AppLoad.Nothing
+        _systemListState.value = AppLoad.Nothing
+    }
+
+    fun uploadUser() {
+        _appListState.value = AppLoad.UserLoaded
     }
 
     fun uploadSystem() {
-        viewModelScope.launch {
-            _appListState.emit(AppLoad.SystemLoaded)
-        }
+        _systemListState.value = AppLoad.SystemLoaded
     }
 
     val titles = ArrayList<String>().apply {

@@ -10,11 +10,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentSystemAppBinding
 import com.connor.fuckcolorapp.states.AppLoad
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
+import com.connor.fuckcolorapp.ui.adapter.FooterAdapter
+import com.connor.fuckcolorapp.ui.adapter.HeaderAdapter
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -46,15 +49,21 @@ class SystemAppFragment : Fragment() {
         _binding = FragmentSystemAppBinding.inflate(inflater, container, false)
         with(binding.rvSystem) {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = appListAdapter
+            adapter = ConcatAdapter(HeaderAdapter(), appListAdapter, FooterAdapter())
+        }
+        binding.swipeSystem.setOnRefreshListener {
+            viewModel.setLoading()
+            viewModel.getAppsList()
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.systemListState.collect {
                     binding.progressSystem.isVisible = it == AppLoad.Loading
+                    binding.rvSystem.isVisible = it != AppLoad.Loading
                     when (it) {
                         is AppLoad.SystemLoaded -> {
-                            appListAdapter.submitList(App.systemAppList)
+                            binding.swipeSystem.isRefreshing = false
+                            appListAdapter.submitList(ArrayList(App.systemAppList))
                         }
                         else -> {}
                     }

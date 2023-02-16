@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentUserAppBinding
+import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.models.AppInfo
 import com.connor.fuckcolorapp.states.AppLoad
@@ -39,7 +40,8 @@ class UserAppFragment : Fragment() {
             }.also {
                 it!!.isCheck = !it.isCheck
             }
-            //viewModel.uploadUser()
+          //  viewModel.setLoading()
+           // viewModel.uploadUser()
         }
     }
 
@@ -52,13 +54,20 @@ class UserAppFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = ConcatAdapter(HeaderAdapter(), appListAdapter, FooterAdapter())
         }
+        binding.swipeUser.setOnRefreshListener {
+            viewModel.setLoading()
+            viewModel.getAppsList()
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.appListState.collect {
                     binding.progressUser.isVisible = it == AppLoad.Loading
+                    binding.rvUser.isVisible = it != AppLoad.Loading
+                    it.logCat()
                     when (it) {
                         is AppLoad.UserLoaded -> {
-                            appListAdapter.submitList(App.userAppList)
+                            appListAdapter.submitList(ArrayList(App.userAppList))
+                            binding.swipeUser.isRefreshing = false
                         }
                         else -> {}
                     }

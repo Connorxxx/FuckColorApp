@@ -21,19 +21,16 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         repository.checkPermission()
     }
 
-    fun disableApp(packageName: String) {
-        repository.disableAppWithCheck(packageName)
+    fun checkShizuku(block: () -> Unit) {
+        repository.checkShizuku {
+            block()
+        }
     }
 
-    fun uninstallApp(packageName: String) {
-       // repository.uninstallApp(packageName)
-    }
 
     fun queryPackage() {
         viewModelScope.launch {
             repository.queryPackageWithCheck()
         }
-
     }
-
 }

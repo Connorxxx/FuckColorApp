@@ -46,4 +46,13 @@
         app:layout_constraintStart_toStartOf="@id/btn_list"
         app:layout_constraintTop_toBottomOf="@id/btn_list"/>
 
+    <Button
+        android:id="@+id/btn_shizuku"
+        android:text="open shizuku"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/btn_open"
+        app:layout_constraintTop_toBottomOf="@id/btn_open"
+        android:layout_marginTop="23dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
