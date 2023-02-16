@@ -3,7 +3,9 @@ package com.connor.fuckcolorapp.ui
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
 import com.connor.core.receiveEvent
+import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.databinding.ActivityAppsBinding
 import com.connor.fuckcolorapp.extension.showToast
@@ -39,10 +41,14 @@ class AppsActivity : AppCompatActivity() {
             tab.text = viewModel.titles[position]
         }.attach()
         binding.fabPure.setOnClickListener {
+            it.isEnabled = false
+            binding.fabPure.load(R.drawable.hourglass_full)
             viewModel.setLoading()
             startService<PackageService> {  }
         }
         receiveEvent<String>(Consts.PURE_APP) {
+            binding.fabPure.isEnabled = true
+            binding.fabPure.load(R.drawable.baseline_ac_unit_24)
             viewModel.getAppsList()
         }
         receiveEvent<String>(Consts.CHECK_FALSE) {
