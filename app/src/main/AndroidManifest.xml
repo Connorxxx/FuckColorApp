@@ -18,13 +18,13 @@
         android:theme="@style/Theme.FuckColorApp"
         tools:targetApi="31">
         <activity
-            android:name=".ui.AppListActivity"
+            android:name=".ui.AppsActivity"
             android:exported="false" />
 
         <service
             android:name=".services.PackageService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".MainActivity"

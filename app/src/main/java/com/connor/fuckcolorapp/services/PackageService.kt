@@ -10,9 +10,11 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.connor.core.emitEvent
+import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.MainActivity
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.consts.Consts
+import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.models.Repository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -48,8 +50,10 @@ class PackageService : LifecycleService() {
         val disable = intent?.extras?.getString("disable_package") ?: ""
 
         lifecycleScope.launch {
-            doAsync(uninstall, disable)
-            emitEvent("Finish", Consts.PURE_APP)
+            selectPure()
+            //doAsync(uninstall, disable)
+           // emitEvent("Finish", Consts.PURE_APP)
+            "Finish".showToast()
             stopSelf()
         }
         return super.onStartCommand(intent, flags, startId)
@@ -58,6 +62,25 @@ class PackageService : LifecycleService() {
     private suspend fun doAsync(uninstall: String, disable: String) = coroutineScope {
         val uninstallResult = async { repository.uninstallAppWithCheck(uninstall) }
         val disableResult = async { repository.disableApp(disable) }
+        withContext(Dispatchers.IO) {
+            uninstallResult.await()
+            disableResult.await()
+        }
+    }
+
+    private suspend fun selectPure() = coroutineScope {
+        val uninstallList = App.userAppList.filter { it.isCheck }
+        val uninstallResult = async {
+            uninstallList.forEach {
+                repository.uninstallAppWithCheck(it.packageName.toString())
+            }
+        }
+        val disableList = App.systemAppList.filter { it.isCheck }
+        val disableResult = async {
+            disableList.forEach {
+                repository.disableApp(it.packageName.toString())
+            }
+        }
         withContext(Dispatchers.IO) {
             uninstallResult.await()
             disableResult.await()

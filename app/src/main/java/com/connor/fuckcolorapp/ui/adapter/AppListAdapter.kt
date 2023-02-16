@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.ItemAppInfoBinding
 import com.connor.fuckcolorapp.models.AppInfo
 
-class AppListAdapter(private val onClick: (AppInfo) -> Unit) :
+class AppListAdapter (private val onClick: (AppInfo) -> Unit) :
     ListAdapter<AppInfo, AppListAdapter.ViewHolder>(FlowerDiffCallback) {
-
     object FlowerDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
         override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
             return oldItem.label == newItem.label
@@ -28,7 +28,7 @@ class AppListAdapter(private val onClick: (AppInfo) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            binding.cardApp.setOnClickListener {
+            binding.checkBox.setOnClickListener {
                 binding.m?.let {
                     onClick(it)
                 }
@@ -38,6 +38,11 @@ class AppListAdapter(private val onClick: (AppInfo) -> Unit) :
         fun bind(appInfo: AppInfo) {
             binding.m = appInfo
             binding.imgIcon.load(appInfo.icon)
+//            binding.cardApp.setCardBackgroundColor(
+//                if (appInfo.isCheck) App.app.getColor(R.color.primary) else App.app.getColor(
+//                    R.color.background
+//                )
+//            )
         }
     }
 

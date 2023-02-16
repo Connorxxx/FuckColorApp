@@ -12,10 +12,12 @@ import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.extension.startActivity
 import com.connor.fuckcolorapp.extension.startService
 import com.connor.fuckcolorapp.services.PackageService
-import com.connor.fuckcolorapp.ui.AppListActivity
+import com.connor.fuckcolorapp.ui.AppsActivity
 import com.connor.fuckcolorapp.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.system.measureTimeMillis
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -40,16 +42,14 @@ class MainActivity : AppCompatActivity() {
             viewModel.queryPackage()
         }
         binding.btnOpen.setOnClickListener {
-            startActivity<AppListActivity> {  }
+            startActivity<AppsActivity> { }
         }
-        lifecycleScope.launch {
-            receiveEvent<String>(Consts.CHECK_FALSE) {
-                it.logCat()
-                it.showToast()
-            }
-            receiveEvent<String>(Consts.PURE_APP) {
-                it.showToast()
-            }
+        receiveEvent<String>(Consts.CHECK_FALSE) {
+            it.logCat()
+            it.showToast()
+        }
+        receiveEvent<String>(Consts.PURE_APP) {
+            it.showToast()
         }
     }
 }
