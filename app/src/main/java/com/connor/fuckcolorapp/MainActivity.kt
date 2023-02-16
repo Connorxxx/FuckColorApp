@@ -33,33 +33,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        binding.btnTest.setOnClickListener {
-            // viewModel.disableApp("com.connor.launcher")
-        }
-        binding.btnUninstall.setOnClickListener {
-            startService<PackageService> {
-                putExtra("uninstall_package", "com.connor.launcher")
-                putExtra("disable_package", "com.connor.moviecat")
-            }
-        }
-        binding.btnList.setOnClickListener {
-            viewModel.queryPackage()
-        }
-        binding.btnOpen.setOnClickListener {
+//        binding.btnUninstall.setOnClickListener {
+//            startService<PackageService> {
+//                putExtra("uninstall_package", "com.connor.launcher")
+//                putExtra("disable_package", "com.connor.moviecat")
+//            }
+//        }
+//        binding.btnList.setOnClickListener {
+//            viewModel.queryPackage()
+//        }
+        binding.cardApps.setOnClickListener {
             viewModel.checkShizuku {
                 startActivity<AppsActivity> { }
             }
         }
-        binding.btnShizuku.setOnClickListener {
-            packageManager.getLaunchIntentForPackage(shizukuPackage)
-                ?.let { startActivity(it) }
-                ?: startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("market://details?id=$shizukuPackage")
-                    )
-                )
-        }
+//        binding.btnShizuku.setOnClickListener {
+//            packageManager.getLaunchIntentForPackage(shizukuPackage)
+//                ?.let { startActivity(it) }
+//                ?: startActivity(
+//                    Intent(
+//                        Intent.ACTION_VIEW,
+//                        Uri.parse("market://details?id=$shizukuPackage")
+//                    )
+//                )
+//        }
         receiveEvent<String>(Consts.CHECK_FALSE) {
             it.showToast()
         }

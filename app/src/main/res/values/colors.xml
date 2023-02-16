@@ -88,4 +88,10 @@
     <!-- MD3 -->
     <color name="background">#fcfdf8</color>
     <color name="primary">#D8E6CF</color>
+    <color name="sea_blue">#0077BE</color>
+    <color name="aquamarine">#00BFA5</color>
+    <color name="purple">#004DA0</color>
+    <color name="navy_blue">#001933</color>
+    <color name="pearl_white">#F3EFEE</color>
+
 </resources>

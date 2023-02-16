@@ -7,52 +7,89 @@
     android:background="@color/background"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btn_Test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:text="Hello World!"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!-- btn_shizuku  btn_open -->
 
-    <Button
-        android:id="@+id/btn_uninstall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Uninstall"
-        app:layout_constraintEnd_toEndOf="@+id/btn_Test"
-        app:layout_constraintStart_toStartOf="@+id/btn_Test"
-        app:layout_constraintTop_toBottomOf="@+id/btn_Test" />
-
-    <Button
-        android:id="@+id/btn_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/btn_uninstall"
-        app:layout_constraintEnd_toEndOf="@id/btn_uninstall"
-        app:layout_constraintTop_toBottomOf="@id/btn_uninstall"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_start"
         android:layout_margin="24dp"
-        android:text="List App" />
+        app:cardBackgroundColor="@color/navy_blue"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="0dp">
 
-    <Button
-        android:id="@+id/btn_open"
-        android:text="Open"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="@id/btn_list"
-        app:layout_constraintTop_toBottomOf="@id/btn_list"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
 
-    <Button
-        android:id="@+id/btn_shizuku"
-        android:text="open shizuku"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/btn_open"
-        app:layout_constraintTop_toBottomOf="@id/btn_open"
-        android:layout_marginTop="23dp"/>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/appCompatImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/play_circle" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:textColor="@color/pearl_white"
+                android:textSize="24sp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView"
+                app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+                app:layout_constraintTop_toTopOf="@+id/appCompatImageView" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_apps"
+        android:layout_margin="24dp"
+        app:cardBackgroundColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:layout_constraintEnd_toEndOf="@id/card_start"
+        app:layout_constraintStart_toStartOf="@id/card_start"
+        app:layout_constraintTop_toBottomOf="@id/card_start"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/app_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/apps" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="App List"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/app_icon"
+                app:layout_constraintStart_toEndOf="@+id/app_icon"
+                app:layout_constraintTop_toTopOf="@+id/app_icon" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
