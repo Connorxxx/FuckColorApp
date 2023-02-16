@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/background"
-            app:tabIndicatorColor="@color/google_red"
+            app:tabIndicatorColor="@color/navy_blue"
             app:tabMode="fixed"
             app:tabGravity="fill"
             app:tabRippleColor="@null"
@@ -38,9 +38,10 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/primary"
+        android:backgroundTint="@color/sea_blue"
         android:clickable="true"
         android:contentDescription="@string/app_name"
+        app:tint="@null"
         app:srcCompat="@drawable/baseline_ac_unit_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
