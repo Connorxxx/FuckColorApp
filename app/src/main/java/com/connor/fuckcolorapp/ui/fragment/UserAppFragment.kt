@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentUserAppBinding
 import com.connor.fuckcolorapp.extension.logCat
-import com.connor.fuckcolorapp.extension.showToast
-import com.connor.fuckcolorapp.models.AppInfo
 import com.connor.fuckcolorapp.states.AppLoad
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
 import com.connor.fuckcolorapp.ui.adapter.FooterAdapter
@@ -44,14 +42,30 @@ class UserAppFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentUserAppBinding.inflate(inflater, container, false)
+        initUI()
+        initScope()
+        return binding.root
+    }
+
+    private fun initUI() {
         with(binding.rvUser) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = ConcatAdapter(headerAdapter, appListAdapter, footerAdapter)
+        }
+        appListAdapter.setClickListener { info ->
+            app.userAppList.find {
+                it.label == info.label
+            }?.also {
+                it.isCheck = !it.isCheck
+            }
         }
         binding.swipeUser.setOnRefreshListener {
             viewModel.setLoading()
             viewModel.getAppsList()
         }
+    }
+
+    private fun initScope() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.appListState.collect {
@@ -68,7 +82,6 @@ class UserAppFragment : Fragment() {
                 }
             }
         }
-        return binding.root
     }
 
     override fun onDestroy() {

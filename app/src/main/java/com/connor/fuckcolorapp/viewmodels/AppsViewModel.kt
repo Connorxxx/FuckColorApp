@@ -64,14 +64,4 @@ class AppsViewModel @Inject constructor(
     fun uploadSystem() {
         _systemListState.value = AppLoad.SystemLoaded
     }
-
-    val titles = ArrayList<String>().apply {
-        add("User")
-        add("System")
-    }
-
-    val fragments = ArrayList<Fragment>().apply {
-        add(UserAppFragment())
-        add(SystemAppFragment())
-    }
 }

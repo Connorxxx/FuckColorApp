@@ -15,6 +15,7 @@ import com.connor.fuckcolorapp.ui.adapter.TabPagerAdapter
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AppsActivity : AppCompatActivity() {
@@ -24,12 +25,7 @@ class AppsActivity : AppCompatActivity() {
     private val viewModel by viewModels<AppsViewModel>()
 
     private val tabPagerAdapter by lazy {
-        TabPagerAdapter(
-            supportFragmentManager,
-            lifecycle,
-            viewModel.fragments,
-            viewModel.titles
-        )
+        TabPagerAdapter(supportFragmentManager, lifecycle)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +34,7 @@ class AppsActivity : AppCompatActivity() {
         binding.pageTab.adapter = tabPagerAdapter
         binding.pageTab.offscreenPageLimit = 2
         TabLayoutMediator(binding.tab, binding.pageTab) { tab, position ->
-            tab.text = viewModel.titles[position]
+            tab.text = tabPagerAdapter.getPageTitle(position)
         }.attach()
         binding.fabPure.setOnClickListener {
             it.isEnabled = false

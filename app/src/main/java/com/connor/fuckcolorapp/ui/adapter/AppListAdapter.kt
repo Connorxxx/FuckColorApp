@@ -17,15 +17,22 @@ import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
 @FragmentScoped
-class AppListAdapter @Inject constructor(val app: App, @ActivityContext val context: Context) :
+class AppListAdapter @Inject constructor(@ActivityContext val context: Context) :
     ListAdapter<AppInfo, AppListAdapter.ViewHolder>(FlowerDiffCallback) {
     object FlowerDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
         override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
             return oldItem.label == newItem.label
         }
+
         override fun areContentsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
             return oldItem == newItem
         }
+    }
+
+    var listener: ((AppInfo) -> Unit?)? = null
+
+    fun setClickListener(listener: (AppInfo) -> Unit) {
+        this.listener = listener
     }
 
     inner class ViewHolder(private val binding: ItemAppInfoBinding) :
@@ -34,15 +41,10 @@ class AppListAdapter @Inject constructor(val app: App, @ActivityContext val cont
         init {
             binding.checkBox.setOnClickListener {
                 binding.m?.let { info ->
-                    app.userAppList.find {
-                        it.label == info.label
-                    }?.also {
-                        it.isCheck = !it.isCheck
-                    }
+                    listener?.let { it(info) }
                     binding.cardApp.setCardBackgroundColor(
-                        if (info.isCheck) context.getColor(R.color.primary) else context.getColor(
-                            R.color.background
-                        )
+                        if (info.isCheck) context.getColor(R.color.primary)
+                        else context.getColor(R.color.background)
                     )
                 }
             }
