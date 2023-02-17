@@ -44,7 +44,9 @@ class AppsActivity : AppCompatActivity() {
             it.isEnabled = false
             binding.fabPure.load(R.drawable.hourglass_full)
             viewModel.setLoading()
-            startService<PackageService> {  }
+            startService<PackageService> {
+                putExtra("is_select", true)
+            }
         }
         receiveEvent<String>(Consts.PURE_APP) {
             binding.fabPure.isEnabled = true

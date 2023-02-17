@@ -26,17 +26,28 @@ class PackageService : LifecycleService() {
     @Inject
     lateinit var repository: Repository
 
+    private val autoUninstall by lazy {
+        arrayListOf(
+            ""
+        )
+    }
+    private val autoDisable by lazy {
+        arrayListOf(
+            ""
+        )
+    }
+
     override fun onCreate() {
         super.onCreate()
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel(
-            "ktor_server", "Ktor Service",
-            NotificationManager.IMPORTANCE_DEFAULT
+            "package_server", "Package Service",
+            NotificationManager.IMPORTANCE_LOW
         )
         manager.createNotificationChannel(channel)
         val intent = Intent(this, MainActivity::class.java)
         val pi = PendingIntent.getActivity(this, 0, intent, FLAG_IMMUTABLE)
-        val notification = NotificationCompat.Builder(this, "ktor_server")
+        val notification = NotificationCompat.Builder(this, "package_server")
             .setContentTitle("Running...")
             .setContentText("please waiting until finish")
             .setSmallIcon(R.drawable.baseline_ac_unit_24)
@@ -46,12 +57,14 @@ class PackageService : LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val uninstall = intent?.extras?.getString("uninstall_package") ?: ""
-        val disable = intent?.extras?.getString("disable_package") ?: ""
+
+        val isSelect = intent?.extras?.getBoolean("is_select")
 
         lifecycleScope.launch(Dispatchers.Default) {
-            selectPure()
-            //doAsync(uninstall, disable)
+            isSelect?.let {
+                if (it) selectPure()
+                else doAsync()
+            }
             withContext(Dispatchers.Main) {
                 emitEvent("Finish", Consts.PURE_APP)
                 stopSelf()
@@ -60,9 +73,14 @@ class PackageService : LifecycleService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private suspend fun doAsync(uninstall: String, disable: String) = coroutineScope {
-        val uninstallResult = async { repository.uninstallAppWithCheck(uninstall) }
-        val disableResult = async { repository.disableApp(disable) }
+    private suspend fun doAsync() = coroutineScope {
+        val uninstallResult = async {
+        autoUninstall.forEach { repository.uninstallAppWithCheck(it) }
+
+        }
+        val disableResult = async {
+            autoDisable.forEach { repository.disableApp(it) }
+        }
         withContext(Dispatchers.IO) {
             uninstallResult.await()
             disableResult.await()

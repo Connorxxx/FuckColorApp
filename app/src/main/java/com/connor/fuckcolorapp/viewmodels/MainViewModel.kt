@@ -26,11 +26,4 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             block()
         }
     }
-
-
-    fun queryPackage() {
-        viewModelScope.launch {
-            repository.queryPackageWithCheck()
-        }
-    }
 }

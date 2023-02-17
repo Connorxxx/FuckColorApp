@@ -2,11 +2,13 @@ package com.connor.fuckcolorapp.models
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import com.connor.core.emitEvent
+import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.BuildConfig
 import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.consts.Consts.MATCH_UNINSTALLED
@@ -27,6 +29,11 @@ import javax.inject.Inject
 class Repository @Inject constructor(@ApplicationContext val context: Context) {
 
     private val myUserId get() = android.os.Process.myUserHandle().hashCode()
+
+    private val ResolveInfo.isSystemApp: Boolean
+        get() = activityInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
+
+    private val pm: PackageManager = context.packageManager
 
     fun checkPermission() = kotlin.runCatching {
         when {
@@ -84,23 +91,48 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
         }.getOrDefault(false)
     }
 
+    suspend fun getUserAppList() = queryPackage().filter { !it.isSystemApp }.also { query ->
+        App.userAppList.clear()
+        query.forEach {
+            App.userAppList.add(
+                AppInfo(
+                    it.loadLabel(pm),
+                    it.activityInfo.packageName,
+                    it.loadIcon(pm),
+                    true
+                )
+            )
+        }
+        App.userAppList.sortBy { list -> list.label.toString() }
+    }
+
+    suspend fun getSystemAppList() = queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
+        App.systemAppList.clear()
+        query.forEach {
+            App.systemAppList.add(
+                AppInfo(
+                    it.loadLabel(pm),
+                    it.activityInfo.packageName,
+                    it.loadIcon(pm),
+                    true
+                )
+            )
+        }
+        App.systemAppList.sortBy { list -> list.label.toString() }
+    }
+
     suspend fun queryPackageWithCheck() = checkShizuku { queryPackage() }
     suspend fun queryPackage(flags: Int = PackageManager.MATCH_ALL): MutableList<ResolveInfo> =
         withContext(Dispatchers.IO) {
-            val pm = context.packageManager
             val i = Intent(Intent.ACTION_MAIN, null)
             i.addCategory(Intent.CATEGORY_LAUNCHER)
             if (TargetApi.T) {
                 pm.queryIntentActivities(
                     i,
                     PackageManager.ResolveInfoFlags.of(flags.toLong())
-                ).onEach {
-                    it.activityInfo.packageName.logCat()
-                }
+                )
             } else {
-                pm.queryIntentActivities(i, flags).onEach {
-                    //  it.packageName.logCat()
-                }
+                pm.queryIntentActivities(i, flags)
             }
         }
 
@@ -120,6 +152,7 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
             )
             else context.packageManager.getPackageInfo(packageName, flags)
         }.getOrNull()
+
 
     inline fun <T> checkShizuku(block: () -> T): T? {
         checkPermission().also {

@@ -28,8 +28,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppsViewModel @Inject constructor(
-    private val repository: Repository,
-    private val application: Application
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _appListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
@@ -37,12 +36,6 @@ class AppsViewModel @Inject constructor(
 
     private val _systemListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
     val systemListState = _systemListState.asStateFlow()
-
-//    val appList = ArrayList<AppInfo>()
-//    val systemAppList = ArrayList<AppInfo>()
-
-    private val ResolveInfo.isSystemApp: Boolean
-        get() = activityInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
 
     init {
         if (App.userAppList.isEmpty() || App.systemAppList.isEmpty())
@@ -56,42 +49,12 @@ class AppsViewModel @Inject constructor(
     fun getAppsList() {
         "getAppsList".logCat()
         viewModelScope.launch(Dispatchers.Default) {
-            App.userAppList.clear()
-            App.systemAppList.clear()
             launch {
-                val pm = application.packageManager
-                repository.queryPackage(PackageManager.MATCH_ALL)
-                    .filter { !it.isSystemApp }
-                    .also { query ->
-                        query.forEach { resolveInfo ->
-                            App.userAppList.add(
-                                AppInfo(
-                                    resolveInfo.loadLabel(pm),
-                                    resolveInfo.activityInfo.packageName,
-                                    resolveInfo.loadIcon(pm),
-                                    true
-                                )
-                            )
-                        }
-                        App.userAppList.sortBy { list -> list.label.toString() }
-                    }
+                repository.getUserAppList()
                 _appListState.emit(AppLoad.UserLoaded)
             }
             launch {
-                val pm = application.packageManager
-                repository.queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
-                    query.forEach { resolveInfo ->
-                        App.systemAppList.add(
-                            AppInfo(
-                                resolveInfo.loadLabel(pm),
-                                resolveInfo.activityInfo.packageName,
-                                resolveInfo.loadIcon(pm),
-                                false
-                            )
-                        )
-                    }
-                    App.systemAppList.sortBy { list -> list.label.toString() }
-                }
+                repository.getSystemAppList()
                 _systemListState.emit(AppLoad.SystemLoaded)
             }
         }
