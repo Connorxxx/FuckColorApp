@@ -4,8 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.connor.fuckcolorapp.databinding.HeaderItemBinding
+import dagger.hilt.android.scopes.FragmentScoped
+import javax.inject.Inject
 
-class HeaderAdapter : RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
+@FragmentScoped
+class HeaderAdapter @Inject constructor() : RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
 
 
     inner class ViewHolder(private val binding: HeaderItemBinding)

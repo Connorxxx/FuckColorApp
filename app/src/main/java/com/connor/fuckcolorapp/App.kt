@@ -7,17 +7,15 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class App : Application() {
 
-    companion object {
-        lateinit var app: App private set
-        lateinit var userAppList: ArrayList<AppInfo> private set
-        lateinit var systemAppList: ArrayList<AppInfo> private set
-    }
+   // companion object {
+      //  lateinit var app: App private set
+    val userAppList by lazy { ArrayList<AppInfo>() }
+    val systemAppList by lazy { ArrayList<AppInfo>() }
+    //}
 
     override fun onCreate() {
         super.onCreate()
-        app = this
-        userAppList = ArrayList()
-        systemAppList = ArrayList()
+      //  app = this
     }
 
 }

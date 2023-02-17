@@ -24,26 +24,20 @@ import com.connor.fuckcolorapp.ui.adapter.HeaderAdapter
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserAppFragment : Fragment() {
+
+    @Inject lateinit var app: App
+    @Inject lateinit var appListAdapter: AppListAdapter
+    @Inject lateinit var headerAdapter: HeaderAdapter
+    @Inject lateinit var footerAdapter: FooterAdapter
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
     private var _binding: FragmentUserAppBinding? = null
     private val binding get() = _binding!!
-
-    private val appListAdapter by lazy {
-        AppListAdapter { info ->
-            App.userAppList.find {
-                it.label == info.label
-            }.also {
-                it!!.isCheck = !it.isCheck
-            }
-          //  viewModel.setLoading()
-           // viewModel.uploadUser()
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +46,7 @@ class UserAppFragment : Fragment() {
         _binding = FragmentUserAppBinding.inflate(inflater, container, false)
         with(binding.rvUser) {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = ConcatAdapter(HeaderAdapter(), appListAdapter, FooterAdapter())
+            adapter = ConcatAdapter(headerAdapter, appListAdapter, footerAdapter)
         }
         binding.swipeUser.setOnRefreshListener {
             viewModel.setLoading()
@@ -66,7 +60,7 @@ class UserAppFragment : Fragment() {
                     it.logCat()
                     when (it) {
                         is AppLoad.UserLoaded -> {
-                            appListAdapter.submitList(ArrayList(App.userAppList))
+                            appListAdapter.submitList(ArrayList(app.userAppList))
                             binding.swipeUser.isRefreshing = false
                         }
                         else -> {}

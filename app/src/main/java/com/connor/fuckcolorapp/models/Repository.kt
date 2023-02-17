@@ -25,15 +25,17 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class Repository @Inject constructor(@ApplicationContext val context: Context) {
+@Singleton
+class Repository @Inject constructor(@ApplicationContext val context: Context, val app: App) {
 
     private val myUserId get() = android.os.Process.myUserHandle().hashCode()
 
     private val ResolveInfo.isSystemApp: Boolean
         get() = activityInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
 
-    private val pm: PackageManager = context.packageManager
+    private val pm: PackageManager by lazy { context.packageManager }
 
     fun checkPermission() = kotlin.runCatching {
         when {
@@ -92,9 +94,9 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
     }
 
     suspend fun getUserAppList() = queryPackage().filter { !it.isSystemApp }.also { query ->
-        App.userAppList.clear()
+        app.userAppList.clear()
         query.forEach {
-            App.userAppList.add(
+            app.userAppList.add(
                 AppInfo(
                     it.loadLabel(pm),
                     it.activityInfo.packageName,
@@ -103,13 +105,13 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
                 )
             )
         }
-        App.userAppList.sortBy { list -> list.label.toString() }
+        app.userAppList.sortBy { list -> list.label.toString() }
     }
 
     suspend fun getSystemAppList() = queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
-        App.systemAppList.clear()
+        app.systemAppList.clear()
         query.forEach {
-            App.systemAppList.add(
+            app.systemAppList.add(
                 AppInfo(
                     it.loadLabel(pm),
                     it.activityInfo.packageName,
@@ -118,7 +120,7 @@ class Repository @Inject constructor(@ApplicationContext val context: Context) {
                 )
             )
         }
-        App.systemAppList.sortBy { list -> list.label.toString() }
+        app.systemAppList.sortBy { list -> list.label.toString() }
     }
 
     suspend fun queryPackageWithCheck() = checkShizuku { queryPackage() }

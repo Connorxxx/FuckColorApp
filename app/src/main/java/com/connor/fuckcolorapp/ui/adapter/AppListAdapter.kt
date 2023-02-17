@@ -1,5 +1,6 @@
 package com.connor.fuckcolorapp.ui.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -11,14 +12,17 @@ import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.ItemAppInfoBinding
 import com.connor.fuckcolorapp.models.AppInfo
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.scopes.FragmentScoped
+import javax.inject.Inject
 
-class AppListAdapter (private val onClick: (AppInfo) -> Unit) :
+@FragmentScoped
+class AppListAdapter @Inject constructor(val app: App, @ActivityContext val context: Context) :
     ListAdapter<AppInfo, AppListAdapter.ViewHolder>(FlowerDiffCallback) {
     object FlowerDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
         override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
             return oldItem.label == newItem.label
         }
-
         override fun areContentsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
             return oldItem == newItem
         }
@@ -29,10 +33,14 @@ class AppListAdapter (private val onClick: (AppInfo) -> Unit) :
 
         init {
             binding.checkBox.setOnClickListener {
-                binding.m?.let {
-                    onClick(it)
+                binding.m?.let { info ->
+                    app.userAppList.find {
+                        it.label == info.label
+                    }?.also {
+                        it.isCheck = !it.isCheck
+                    }
                     binding.cardApp.setCardBackgroundColor(
-                        if (it.isCheck) App.app.getColor(R.color.primary) else App.app.getColor(
+                        if (info.isCheck) context.getColor(R.color.primary) else context.getColor(
                             R.color.background
                         )
                     )
@@ -60,5 +68,5 @@ class AppListAdapter (private val onClick: (AppInfo) -> Unit) :
         val repo = getItem(position)
         holder.bind(repo)
     }
-
 }
+

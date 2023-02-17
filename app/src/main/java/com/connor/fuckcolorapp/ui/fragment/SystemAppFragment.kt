@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentSystemAppBinding
+import com.connor.fuckcolorapp.models.AppInfo
 import com.connor.fuckcolorapp.states.AppLoad
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
 import com.connor.fuckcolorapp.ui.adapter.FooterAdapter
@@ -26,21 +27,15 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SystemAppFragment : Fragment() {
 
+    @Inject lateinit var app: App
+    @Inject lateinit var appListAdapter: AppListAdapter
+    @Inject lateinit var headerAdapter: HeaderAdapter
+    @Inject lateinit var footerAdapter: FooterAdapter
+
     private val viewModel by activityViewModels<AppsViewModel>()
 
     private var _binding: FragmentSystemAppBinding? = null
     private val binding get() = _binding!!
-
-    private val appListAdapter by lazy {
-        AppListAdapter { info ->
-            App.systemAppList.find {
-                it.label == info.label
-            }.also {
-                it!!.isCheck = !it.isCheck
-            }
-          //  viewModel.uploadSystem()
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,7 +44,7 @@ class SystemAppFragment : Fragment() {
         _binding = FragmentSystemAppBinding.inflate(inflater, container, false)
         with(binding.rvSystem) {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = ConcatAdapter(HeaderAdapter(), appListAdapter, FooterAdapter())
+            adapter = ConcatAdapter(headerAdapter, appListAdapter, footerAdapter)
         }
         binding.swipeSystem.setOnRefreshListener {
             viewModel.setLoading()
@@ -63,7 +58,7 @@ class SystemAppFragment : Fragment() {
                     when (it) {
                         is AppLoad.SystemLoaded -> {
                             binding.swipeSystem.isRefreshing = false
-                            appListAdapter.submitList(ArrayList(App.systemAppList))
+                            appListAdapter.submitList(ArrayList(app.systemAppList))
                         }
                         else -> {}
                     }

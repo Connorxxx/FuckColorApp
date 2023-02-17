@@ -23,8 +23,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class PackageService : LifecycleService() {
 
-    @Inject
-    lateinit var repository: Repository
+    @Inject lateinit var repository: Repository
+    @Inject lateinit var app: App
 
     private val autoUninstall by lazy {
         arrayListOf(
@@ -75,7 +75,7 @@ class PackageService : LifecycleService() {
 
     private suspend fun doAsync() = coroutineScope {
         val uninstallResult = async {
-        autoUninstall.forEach { repository.uninstallAppWithCheck(it) }
+            autoUninstall.forEach { repository.uninstallAppWithCheck(it) }
 
         }
         val disableResult = async {
@@ -88,13 +88,13 @@ class PackageService : LifecycleService() {
     }
 
     private suspend fun selectPure() = coroutineScope {
-        val uninstallList = App.userAppList.filter { it.isCheck }
+        val uninstallList = app.userAppList.filter { it.isCheck }
         val uninstallResult = async {
             uninstallList.forEach {
                 repository.uninstallAppWithCheck(it.packageName.toString())
             }
         }
-        val disableList = App.systemAppList.filter { it.isCheck }
+        val disableList = app.systemAppList.filter { it.isCheck }
         val disableResult = async {
             disableList.forEach {
                 repository.disableApp(it.packageName.toString())

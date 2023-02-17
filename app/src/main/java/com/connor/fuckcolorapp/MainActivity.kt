@@ -50,8 +50,11 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
         }
+        binding.layoutHelp.setOnClickListener {
+            //HelpDialog().show(supportFragmentManager, HelpDialog.TAG)
+        }
         receiveEvent<String>(Consts.CHECK_FALSE) {
-            it.showToast()
+            it.showToast(this@MainActivity)
         }
     }
 }

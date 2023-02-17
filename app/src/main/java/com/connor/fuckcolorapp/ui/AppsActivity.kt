@@ -54,7 +54,7 @@ class AppsActivity : AppCompatActivity() {
             viewModel.getAppsList()
         }
         receiveEvent<String>(Consts.CHECK_FALSE) {
-            it.showToast()
+            it.showToast(this@AppsActivity)
         }
     }
 }
