@@ -7,6 +7,5 @@ data class AppInfo(
     var label: CharSequence? = "app",
     val packageName: CharSequence? = "com",
     val icon: Drawable? = null,
-    var isUserApp: Boolean,
     var isCheck: Boolean = false,
 ) : BaseObservable()

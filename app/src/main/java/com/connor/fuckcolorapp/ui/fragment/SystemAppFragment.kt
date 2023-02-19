@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentSystemAppBinding
+import com.connor.fuckcolorapp.extension.repeatOnLifecycle
 import com.connor.fuckcolorapp.states.AppLoad
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
 import com.connor.fuckcolorapp.ui.adapter.FooterAdapter
 import com.connor.fuckcolorapp.ui.adapter.HeaderAdapter
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -59,24 +61,22 @@ class SystemAppFragment : Fragment() {
             }
         }
         binding.swipeSystem.setOnRefreshListener {
-            viewModel.setLoading()
-            viewModel.getAppsList()
+            viewModel.setSystemLoading()
+            viewModel.loadSystem()
         }
     }
 
     private fun initScope() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.systemListState.collect {
-                    binding.progressSystem.isVisible = it == AppLoad.Loading
-                    binding.rvSystem.isVisible = it != AppLoad.Loading
-                    when (it) {
-                        is AppLoad.SystemLoaded -> {
-                            binding.swipeSystem.isRefreshing = false
-                            appListAdapter.submitList(ArrayList(app.systemAppList))
-                        }
-                        else -> {}
+        repeatOnLifecycle {
+            viewModel.systemListState.collect {
+                binding.progressSystem.isVisible = it == AppLoad.Loading
+               // binding.rvSystem.isVisible = it != AppLoad.Loading
+                when (it) {
+                    is AppLoad.SystemLoaded -> {
+                        binding.swipeSystem.isRefreshing = false
+                        appListAdapter.submitList(ArrayList(app.systemAppList))
                     }
+                    else -> {}
                 }
             }
         }

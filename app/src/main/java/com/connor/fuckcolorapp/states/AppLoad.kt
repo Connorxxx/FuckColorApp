@@ -7,6 +7,6 @@ sealed class AppLoad {
     object Nothing: AppLoad()
     object Loading : AppLoad()
     object UserLoaded : AppLoad()
-
     object SystemLoaded : AppLoad()
+    object AllLoaded : AppLoad()
 }

@@ -5,16 +5,31 @@ import android.content.Intent
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.connor.fuckcolorapp.BuildConfig
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 fun Any.logCat(tab: String = "FUCK_COLOR_LOG") {
     if (!BuildConfig.DEBUG) return
     if (this is String) Log.d(tab, this) else Log.d(tab, this.toString())
 }
 
+fun String.getCurrentThread() {
+    "$this: ${Thread.currentThread().name}".logCat()
+}
+
 fun String.showToast(context: Context) {
     Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.showToast(string: String) {
+    string.showToast(this)
 }
 
 fun String.showSnackbar(view: View) {
@@ -31,4 +46,12 @@ inline fun <reified T> Context.startActivity(block: Intent.() -> Unit) {
     val intent = Intent(this, T::class.java)
     intent.block()
     startActivity(intent)
+}
+
+inline fun Fragment.repeatOnLifecycle(crossinline block: suspend (CoroutineScope) -> Unit) {
+    viewLifecycleOwner.lifecycleScope.launch {
+        viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            block(this)
+        }
+    }
 }

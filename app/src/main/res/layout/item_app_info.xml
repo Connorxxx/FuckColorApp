@@ -52,12 +52,13 @@
 
                 <TextView
                     android:id="@+id/tv_label"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="@{m.label}"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/check_box"
                     app:layout_constraintStart_toEndOf="@+id/img_icon"
                     app:layout_constraintTop_toTopOf="@+id/img_icon"
                     tools:text="@string/app_name" />
@@ -80,7 +81,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:padding="24dp"
                     android:checked="@{m.check}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

@@ -9,7 +9,7 @@ import com.connor.fuckcolorapp.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AlertDialogFragment(@StringRes private val titleId: Int, @StringRes private val messageId: Int) : DialogFragment() {
+class AlertDialogFragment(private val titleId: String, private val messageId: String) : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         AlertDialog.Builder(requireContext())

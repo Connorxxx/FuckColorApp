@@ -1,6 +1,8 @@
 package com.connor.fuckcolorapp.ui.adapter
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -39,6 +41,14 @@ class AppListAdapter @Inject constructor(@ActivityContext val context: Context) 
         RecyclerView.ViewHolder(binding.root) {
 
         init {
+            binding.cardApp.setOnClickListener {
+                binding.m?.let {
+                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:" + it.packageName)
+                        context.startActivity(this)
+                    }
+                }
+            }
             binding.checkBox.setOnClickListener {
                 binding.m?.let { info ->
                     listener?.let { it(info) }

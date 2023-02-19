@@ -42,6 +42,6 @@
         android:clickable="true"
         android:contentDescription="@string/app_name"
         app:tint="@null"
-        app:srcCompat="@drawable/baseline_ac_unit_24" />
+        app:srcCompat="@drawable/delete" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

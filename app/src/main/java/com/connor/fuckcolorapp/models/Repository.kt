@@ -3,6 +3,7 @@ package com.connor.fuckcolorapp.models
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.IBinder
@@ -10,15 +11,13 @@ import android.os.ParcelFileDescriptor
 import com.connor.core.emitEvent
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.BuildConfig
+import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.consts.Consts.MATCH_UNINSTALLED
 import com.connor.fuckcolorapp.extension.logCat
-import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.utils.TargetApi
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import moe.shizuku.server.IShizukuService
 import rikka.shizuku.Shizuku
@@ -28,7 +27,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Repository @Inject constructor(@ApplicationContext val context: Context, val app: App) {
+class Repository @Inject constructor(
+    @ApplicationContext val context: Context,
+    val app: App
+    ) {
 
     private val myUserId get() = android.os.Process.myUserHandle().hashCode()
 
@@ -37,25 +39,20 @@ class Repository @Inject constructor(@ApplicationContext val context: Context, v
 
     private val pm: PackageManager by lazy { context.packageManager }
 
-    fun checkPermission() = kotlin.runCatching {
+    fun checkPermission() = runCatching {
         when {
             Shizuku.isPreV11() -> false
             Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED -> true
-            Shizuku.shouldShowRequestPermissionRationale() -> {
-                false
-            }
+            Shizuku.shouldShowRequestPermissionRationale() -> false
             else -> {
                 Shizuku.requestPermission(0)
                 false
             }
         }
-    }.getOrDefault(false)
+    }.getOrElse { false }
 
-    fun disableAppWithCheck(packageName: String) = checkShizuku { disableApp(packageName) }
-
-    fun disableApp(packageName: String): Boolean {
-        getPackageInfoOrNull(packageName) ?: return false
-        return kotlin.runCatching {
+    fun disableApp(packageName: String) = getPackageInfoOrNull(packageName)?.let {
+        runCatching {
             asInterface("android.content.pm.IPackageManager", "package").also {
                 it::class.java.getMethod(
                     "setApplicationEnabledSetting",
@@ -73,25 +70,21 @@ class Repository @Inject constructor(@ApplicationContext val context: Context, v
                     BuildConfig.APPLICATION_ID
                 )
             }
-            "Disable $packageName Success".logCat()
         }.isSuccess
-    }
+    } ?: false
 
-    fun uninstallAppWithCheck(packageName: String) = checkShizuku { uninstallApp(packageName) }
-    private fun uninstallApp(packageName: String): Boolean {
-        return kotlin.runCatching {
+
+    fun uninstallApp(packageName: String) = getPackageInfoOrNull(packageName)?.let {
+        runCatching {
             IShizukuService.Stub.asInterface(Shizuku.getBinder())
                 .newProcess(arrayOf("sh"), null, null).run {
                     ParcelFileDescriptor.AutoCloseOutputStream(outputStream).use {
                         it.write("pm uninstall --user current $packageName".toByteArray())
                     }
-                    (waitFor() == 0).also {
-                        destroy()
-                        "uninstall $packageName Success".logCat()
-                    }
+                    (waitFor() == 0).also { destroy() }
                 }
-        }.getOrDefault(false)
-    }
+        }.getOrElse { false }  //Il0O
+    } ?: false
 
     suspend fun getUserAppList() = queryPackage().filter { !it.isSystemApp }.also { query ->
         app.userAppList.clear()
@@ -100,8 +93,7 @@ class Repository @Inject constructor(@ApplicationContext val context: Context, v
                 AppInfo(
                     it.loadLabel(pm),
                     it.activityInfo.packageName,
-                    it.loadIcon(pm),
-                    true
+                    it.loadIcon(pm)
                 )
             )
         }
@@ -115,16 +107,28 @@ class Repository @Inject constructor(@ApplicationContext val context: Context, v
                 AppInfo(
                     it.loadLabel(pm),
                     it.activityInfo.packageName,
-                    it.loadIcon(pm),
-                    true
+                    it.loadIcon(pm)
                 )
             )
         }
         app.systemAppList.sortBy { list -> list.label.toString() }
     }
 
-    suspend fun queryPackageWithCheck() = checkShizuku { queryPackage() }
-    suspend fun queryPackage(flags: Int = PackageManager.MATCH_ALL): MutableList<ResolveInfo> =
+    suspend fun getAllAppList() = queryInstalledPackages().also { query ->
+        app.allAppList.clear()
+        query.forEach {
+            app.allAppList.add(
+                AppInfo(
+                    it.applicationInfo.loadLabel(pm),
+                    it.packageName,
+                    it.applicationInfo.loadIcon(pm)
+                )
+            )
+        }
+        app.allAppList.sortBy { list -> list.label.toString() }
+    }
+
+    private suspend fun queryPackage(flags: Int = MATCH_UNINSTALLED): MutableList<ResolveInfo> =
         withContext(Dispatchers.IO) {
             val i = Intent(Intent.ACTION_MAIN, null)
             i.addCategory(Intent.CATEGORY_LAUNCHER)
@@ -138,6 +142,17 @@ class Repository @Inject constructor(@ApplicationContext val context: Context, v
             }
         }
 
+    private suspend fun queryInstalledPackages(flags: Int = PackageManager.MATCH_ALL): List<PackageInfo> =
+        withContext(Dispatchers.IO) {
+            if (TargetApi.T) {
+                pm.getInstalledPackages(
+                    PackageManager.PackageInfoFlags.of(
+                        flags.toLong()
+                    )
+                )
+            } else pm.getInstalledPackages(flags)
+        }
+
 
     private fun asInterface(className: String, serviceName: String): Any =
         ShizukuBinderWrapper(SystemServiceHelper.getSystemService(serviceName)).let {
@@ -147,7 +162,7 @@ class Repository @Inject constructor(@ApplicationContext val context: Context, v
         }
 
     private fun getPackageInfoOrNull(packageName: String, flags: Int = Consts.MATCH_UNINSTALLED) =
-        kotlin.runCatching {
+        runCatching {
             if (TargetApi.T) context.packageManager.getPackageInfo(
                 packageName,
                 PackageManager.PackageInfoFlags.of(flags.toLong())
@@ -158,10 +173,10 @@ class Repository @Inject constructor(@ApplicationContext val context: Context, v
 
     inline fun <T> checkShizuku(block: () -> T): T? {
         checkPermission().also {
+            it.logCat()
             if (!it) {
-                emitEvent("Error Check Shizuku", Consts.CHECK_FALSE)
-            }
-            else return block()
+                emitEvent(context.getString(R.string.error), Consts.CHECK_FALSE)
+            } else return block()
         }
         return null
     }

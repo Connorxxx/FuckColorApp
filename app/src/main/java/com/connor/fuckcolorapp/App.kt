@@ -9,9 +9,11 @@ class App : Application() {
 
    // companion object {
       //  lateinit var app: App private set
+   //}
     val userAppList by lazy { ArrayList<AppInfo>() }
     val systemAppList by lazy { ArrayList<AppInfo>() }
-    //}
+    val allAppList by lazy { ArrayList<AppInfo>() }
+
 
     override fun onCreate() {
         super.onCreate()

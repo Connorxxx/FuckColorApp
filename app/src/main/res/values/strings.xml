@@ -1,6 +1,17 @@
 <resources>
-    <string name="app_name">Fuck Color App</string>
+    <string name="app_name">Achro</string>
     <string name="ok">OK</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="finish">Finish</string>
+    <string name="running">Running</string>
+    <string name="start">Start</string>
+    <string name="user">User</string>
+    <string name="system">System</string>
+    <string name="all">All</string>
+    <string name="select_apps">Select Apps</string>
+    <string name="open_shizuku">Open Shizuku</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+    <string name="title">Help</string>
+    <string name="uninstall_detail">本应用需要 Shizuku 才能正常运行\n\n自动清除卸载的应用为： \n邮件,家庭空间,阅读,小游戏,OPPO 商城,快手,高德地图,百度,手机搬家,便签,小布指令,番茄免费小说,智能家居,京东,游戏中心,一加社区,微博,今日头条,抖音,淘宝,腾讯视频,58同城,喜马拉雅,拼多多,知乎,携程旅行,哔哩哔哩\n\n禁用的系统应用为：\n手机管家,钱包,音乐,小布助手,视频\n\n如果有你需要的应用，请使用「选择应用」自行清除</string>
+    <string name="error">Error: Please check Shizuku</string>
 </resources>
