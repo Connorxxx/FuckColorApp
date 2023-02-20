@@ -23,18 +23,14 @@ class AlertDialogFragment(
         AlertDialog.Builder(requireContext())
             .setTitle(titleId)
             .setMessage(messageId)
-            .setPositiveButton(positiveId) { _, _ ->
-                positive()
-            }
+            .setPositiveButton(positiveId) { _, _ -> positive() }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .create()
     } else {
         AlertDialog.Builder(requireContext())
             .setTitle(titleId)
             .setMessage(messageId)
-            .setPositiveButton(positiveId) { _, _ ->
-                positive()
-            }
+            .setPositiveButton(positiveId) { _, _ -> positive() }
             .create()
     }
 
