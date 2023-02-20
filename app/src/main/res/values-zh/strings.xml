@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Achro</string>
     <string name="ok">确定</string>
+    <string name="cancel">取消</string>
     <string name="finish">已清除</string>
     <string name="running">清除中</string>
     <string name="start">清除</string>
@@ -13,6 +14,8 @@
     <string name="help">帮助</string>
     <string name="about">关于</string>
     <string name="title">说明</string>
-    <string name="uninstall_detail">本应用需要 Shizuku 才能正常运行\n\n自动清除卸载的应用为： \n邮件,家庭空间,阅读,小游戏,OPPO 商城,快手,高德地图,百度,手机搬家,便签,小布指令,番茄免费小说,智能家居,京东,游戏中心,一加社区,微博,今日头条,抖音,淘宝,腾讯视频,58同城,喜马拉雅,拼多多,知乎,携程旅行,哔哩哔哩\n\n禁用的系统应用为：\n手机管家,钱包,音乐,小布助手,视频\n\n如果有你需要的应用，请使用「选择应用」自行清除</string>
+    <string name="uninstall_detail">本应用需要 Shizuku 才能正常运行\n\n自动清除卸载的应用为： \n邮件,家庭空间,阅读,小游戏,OPPO 商城,快手,高德地图,百度,手机搬家,便签,小布指令,番茄免费小说,智能家居,游戏中心,一加社区,今日头条,腾讯视频,58同城,喜马拉雅,知乎,携程旅行\n\n禁用的系统应用为：\n手机管家,钱包,音乐,小布助手,视频\n\n如果有你需要的应用，请使用「选择应用」自行清除</string>
+    <string name="head_tips">自动清除卸载的应用为： \n邮件,家庭空间,阅读,小游戏,OPPO 商城,快手,高德地图,百度,手机搬家,便签,小布指令,番茄免费小说,智能家居,游戏中心,一加社区,今日头条,腾讯视频,58同城,喜马拉雅,知乎,携程旅行\n\n禁用的系统应用为：\n手机管家,钱包,音乐,小布助手,视频\n\n如果有你需要的应用，请使用「选择应用」自行清除</string>
+
     <string name="error">错误: 请检查 Shizuku 是否运行</string>
 </resources>

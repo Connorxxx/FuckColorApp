@@ -9,13 +9,20 @@ import com.connor.fuckcolorapp.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AlertDialogFragment(private val titleId: String, private val messageId: String) : DialogFragment() {
+class AlertDialogFragment(
+    private val titleId: String,
+    private val messageId: String,
+    private val positive: () -> Unit
+) : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         AlertDialog.Builder(requireContext())
             .setTitle(titleId)
             .setMessage(messageId)
-            .setPositiveButton(getString(R.string.ok)) { _, _ -> }
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                positive()
+            }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .create()
 
     companion object {
