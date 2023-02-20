@@ -1,10 +1,12 @@
 package com.connor.fuckcolorapp.ui
 
 import android.os.Bundle
+import android.view.View
 import android.widget.TableLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import coil.load
 import com.connor.core.receiveEvent
 import com.connor.fuckcolorapp.App
@@ -46,10 +48,11 @@ class AppsActivity : AppCompatActivity() {
         binding.tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
+                    binding.fabPure.isVisible = it.position != 3
                     when (it.position) {
                         0 -> binding.fabPure.load(R.drawable.delete)
-                        1 -> binding.fabPure.load(R.drawable.baseline_ac_unit_24)
-                        2 -> binding.fabPure.load( R.drawable.baseline_ac_unit_24)
+                        1 , 2 -> binding.fabPure.load(R.drawable.baseline_ac_unit_24)
+                       // 2 -> binding.fabPure.load( R.drawable.baseline_ac_unit_24)
                         else -> {}
                     }
                 }

@@ -15,7 +15,6 @@ import com.connor.fuckcolorapp.MainActivity
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.extension.logCat
-import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.models.Repository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -112,7 +111,7 @@ class PackageService : LifecycleService() {
 
         }
         val disableResult = async {
-            autoDisable.forEach { repository.disableApp(it) }
+            autoDisable.forEach { repository.setAppState(it) }
         }
         withContext(Dispatchers.IO) {
             uninstallResult.await()
@@ -130,14 +129,14 @@ class PackageService : LifecycleService() {
         val disableList = app.systemAppList.filter { it.isCheck }
         val disableResult = async {
             disableList.forEach {
-                repository.disableApp(it.packageName.toString())
+                repository.setAppState(it.packageName.toString())
             }
         }
         val disableAllList = app.allAppList.filter { it.isCheck }
         val disableAllResult = async {
             disableAllList.size.logCat()
             disableAllList.forEach {
-                repository.disableApp(it.packageName.toString())
+                repository.setAppState(it.packageName.toString())
             }
         }
         withContext(Dispatchers.IO) {

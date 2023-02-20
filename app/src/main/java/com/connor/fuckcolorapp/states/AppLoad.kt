@@ -9,4 +9,5 @@ sealed class AppLoad {
     object UserLoaded : AppLoad()
     object SystemLoaded : AppLoad()
     object AllLoaded : AppLoad()
+    object DisableLoaded : AppLoad()
 }

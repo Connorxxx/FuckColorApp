@@ -28,6 +28,9 @@ class AppsViewModel @Inject constructor(
     private val _allListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
     val allListState = _allListState.asStateFlow()
 
+    private val _disableListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
+    val disableListState = _disableListState.asStateFlow()
+
     val hasCheck get() = app.userAppList.any { it.isCheck } || app.systemAppList.any { it.isCheck }  || app.allAppList.any { it.isCheck }
 
     init {
@@ -36,6 +39,10 @@ class AppsViewModel @Inject constructor(
         else {
             upload()
         }
+    }
+
+    fun setAppEnable(packageName: String) {
+        repository.setAppState(packageName, true)
     }
 
     fun getAppsList() {
@@ -49,6 +56,9 @@ class AppsViewModel @Inject constructor(
             launch {
                 getAll()
             }
+            launch {
+                getDisable()
+            }
         }
     }
 
@@ -60,6 +70,17 @@ class AppsViewModel @Inject constructor(
     private suspend fun getAll() {
         repository.getAllAppList()
         _allListState.emit(AppLoad.AllLoaded)
+    }
+
+    fun loadDisable() {
+        viewModelScope.launch(Dispatchers.Default) {
+            getDisable()
+        }
+    }
+
+    private suspend fun getDisable() {
+        repository.getDisableList()
+        _disableListState.emit(AppLoad.DisableLoaded)
     }
 
     fun loadSystem() {
@@ -96,17 +117,22 @@ class AppsViewModel @Inject constructor(
         _allListState.value = AppLoad.Nothing
     }
 
+    fun setDisableLoading() {
+        _disableListState.value = AppLoad.Nothing
+    }
+
     fun setLoading() {
         _appListState.value = AppLoad.Nothing
         _systemListState.value = AppLoad.Nothing
         _allListState.value = AppLoad.Nothing
-
+        _disableListState.value = AppLoad.Nothing
     }
 
     fun upload() {
         _appListState.value = AppLoad.UserLoaded
         _systemListState.value = AppLoad.SystemLoaded
         _allListState.value = AppLoad.AllLoaded
+        _disableListState.value = AppLoad.DisableLoaded
     }
 
 }

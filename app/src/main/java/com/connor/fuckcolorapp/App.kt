@@ -13,6 +13,7 @@ class App : Application() {
     val userAppList by lazy { ArrayList<AppInfo>() }
     val systemAppList by lazy { ArrayList<AppInfo>() }
     val allAppList by lazy { ArrayList<AppInfo>() }
+    val disableList by lazy { ArrayList<AppInfo>() }
 
 
     override fun onCreate() {

@@ -30,7 +30,7 @@ import javax.inject.Singleton
 class Repository @Inject constructor(
     @ApplicationContext val context: Context,
     val app: App
-    ) {
+) {
 
     private val myUserId get() = android.os.Process.myUserHandle().hashCode()
 
@@ -51,9 +51,10 @@ class Repository @Inject constructor(
         }
     }.getOrElse { false }
 
-    fun disableApp(packageName: String) = getPackageInfoOrNull(packageName)?.let {
+    fun setAppState(packageName: String, isEnable: Boolean = false) = getPackageInfoOrNull(packageName)?.let {
         runCatching {
             asInterface("android.content.pm.IPackageManager", "package").also {
+                val state = if (isEnable) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
                 it::class.java.getMethod(
                     "setApplicationEnabledSetting",
                     String::class.java,
@@ -64,7 +65,7 @@ class Repository @Inject constructor(
                 ).invoke(
                     it,
                     packageName,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER,
+                    state,
                     0,
                     myUserId,
                     BuildConfig.APPLICATION_ID
@@ -128,6 +129,22 @@ class Repository @Inject constructor(
         app.allAppList.sortBy { list -> list.label.toString() }
     }
 
+    suspend fun getDisableList() = queryInstalledPackages().also { query ->
+        app.disableList.clear()
+        query.forEach {
+            if (isDisabled(it.packageName)) {
+                app.disableList.add(
+                    AppInfo(
+                        it.applicationInfo.loadLabel(pm),
+                        it.packageName,
+                        it.applicationInfo.loadIcon(pm)
+                    )
+                )
+            }
+        }
+        app.disableList.sortBy { list -> list.label.toString() }
+    }
+
     private suspend fun queryPackage(flags: Int = MATCH_UNINSTALLED): MutableList<ResolveInfo> =
         withContext(Dispatchers.IO) {
             val i = Intent(Intent.ACTION_MAIN, null)
@@ -160,6 +177,9 @@ class Repository @Inject constructor(
                 getMethod("asInterface", IBinder::class.java).invoke(null, it)
             }
         }
+
+    private fun isDisabled(packageName: String) =
+        getPackageInfoOrNull(packageName)?.applicationInfo?.enabled?.not() ?: false
 
     private fun getPackageInfoOrNull(packageName: String, flags: Int = Consts.MATCH_UNINSTALLED) =
         runCatching {
