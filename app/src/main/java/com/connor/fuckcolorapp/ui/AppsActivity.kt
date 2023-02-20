@@ -45,6 +45,7 @@ class AppsActivity : AppCompatActivity() {
             tab.text = tabPagerAdapter.getPageTitle(position)
 
         }.attach()
+        binding.tab.selectedTabPosition
         binding.tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
@@ -52,7 +53,6 @@ class AppsActivity : AppCompatActivity() {
                     when (it.position) {
                         0 -> binding.fabPure.load(R.drawable.delete)
                         1 , 2 -> binding.fabPure.load(R.drawable.baseline_ac_unit_24)
-                       // 2 -> binding.fabPure.load( R.drawable.baseline_ac_unit_24)
                         else -> {}
                     }
                 }

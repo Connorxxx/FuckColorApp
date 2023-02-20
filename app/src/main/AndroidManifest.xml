@@ -23,16 +23,16 @@
             android:label="Install App"
             android:exported="true" >
 
-            <intent-filter> <!-- with MIME type -->
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.INSTALL_PACKAGE" />
+<!--            <intent-filter> -->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <action android:name="android.intent.action.INSTALL_PACKAGE" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-                <data android:mimeType="application/vnd.android.package-archive" />
-            </intent-filter>
+<!--                <data android:scheme="file" />-->
+<!--                <data android:scheme="content" />-->
+<!--                <data android:mimeType="application/vnd.android.package-archive" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".ui.AppsActivity"

@@ -23,7 +23,7 @@ class AppListAdapter @Inject constructor(@ActivityContext val context: Context) 
     ListAdapter<AppInfo, AppListAdapter.ViewHolder>(FlowerDiffCallback) {
     object FlowerDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
         override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
-            return oldItem.label == newItem.label
+            return oldItem.packageName == newItem.packageName
         }
 
         override fun areContentsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {

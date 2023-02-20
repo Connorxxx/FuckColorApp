@@ -55,6 +55,7 @@
                     android:text="@{m.label}"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:singleLine="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/img_icon"
                     app:layout_constraintTop_toTopOf="@+id/img_icon"

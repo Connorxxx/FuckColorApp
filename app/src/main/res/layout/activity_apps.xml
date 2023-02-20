@@ -8,20 +8,46 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:layout_width="match_parent">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@color/background"
-            app:tabIndicatorColor="@color/navy_blue"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            app:tabRippleColor="@null"
-            app:tabTextColor="@color/black"
-            android:layout_gravity="bottom"/>
+            app:contentScrim="@color/background"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:titleEnabled="false"
+            app:toolbarId="@+id/toolbar">
+
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background"
+                android:theme="?attr/actionBarTheme"
+                app:layout_collapseMode="pin"
+                app:titleCentered="true"
+                app:title="@string/select_apps">
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@color/background"
+                android:contentDescription="@string/app_name"
+                app:tabGravity="fill"
+                app:tabIndicatorColor="@color/navy_blue"
+                app:tabMode="fixed"
+                app:tabRippleColor="@null"
+                app:tabTextColor="@color/black" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
