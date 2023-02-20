@@ -28,7 +28,6 @@ class DisableFragment : Fragment() {
 
     @Inject lateinit var app: App
     @Inject lateinit var disableListAdapter: DisableListAdapter
-    @Inject @ActivityContext lateinit var ctx: Context
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
@@ -47,7 +46,7 @@ class DisableFragment : Fragment() {
 
     private fun initUI() {
         with(binding.rvDisable) {
-            layoutManager = LinearLayoutManager(ctx)
+            layoutManager = LinearLayoutManager(requireContext())
             adapter = disableListAdapter
         }
         disableListAdapter.setClickListener { info ->

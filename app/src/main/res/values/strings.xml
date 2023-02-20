@@ -9,6 +9,7 @@
     <string name="user">User</string>
     <string name="system">System</string>
     <string name="all">All</string>
+    <string name="disabled">Disabled</string>
     <string name="select_apps">Select Apps</string>
     <string name="open_shizuku">Open Shizuku</string>
     <string name="help">Help</string>

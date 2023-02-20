@@ -25,7 +25,7 @@ class TabPagerAdapter(private val ctx: Context, fm: FragmentManager, lifecycle: 
         add(ctx.getString(R.string.user))
         add(ctx.getString(R.string.system))
         add(ctx.getString(R.string.all))
-        add("Disable")
+        add(ctx.getString(R.string.disabled))
     }
 
     override fun getItemCount() = fragments.size

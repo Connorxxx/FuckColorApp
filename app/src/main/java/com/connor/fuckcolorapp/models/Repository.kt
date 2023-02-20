@@ -51,28 +51,31 @@ class Repository @Inject constructor(
         }
     }.getOrElse { false }
 
-    fun setAppState(packageName: String, isEnable: Boolean = false) = getPackageInfoOrNull(packageName)?.let {
-        runCatching {
-            asInterface("android.content.pm.IPackageManager", "package").also {
-                val state = if (isEnable) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
-                it::class.java.getMethod(
-                    "setApplicationEnabledSetting",
-                    String::class.java,
-                    Int::class.java,
-                    Int::class.java,
-                    Int::class.java,
-                    String::class.java
-                ).invoke(
-                    it,
-                    packageName,
-                    state,
-                    0,
-                    myUserId,
-                    BuildConfig.APPLICATION_ID
-                )
-            }
-        }.isSuccess
-    } ?: false
+    fun setAppState(packageName: String, isEnable: Boolean = false) =
+        getPackageInfoOrNull(packageName)?.let {
+            if (!isEnable) forceStopApp(packageName)
+            runCatching {
+                asInterface("android.content.pm.IPackageManager", "package").also {
+                    val state =
+                        if (isEnable) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
+                    it::class.java.getMethod(
+                        "setApplicationEnabledSetting",
+                        String::class.java,
+                        Int::class.java,
+                        Int::class.java,
+                        Int::class.java,
+                        String::class.java
+                    ).invoke(
+                        it,
+                        packageName,
+                        state,
+                        0,
+                        myUserId,
+                        BuildConfig.APPLICATION_ID
+                    )
+                }
+            }.isSuccess
+        } ?: false
 
 
     fun uninstallApp(packageName: String) = getPackageInfoOrNull(packageName)?.let {
@@ -145,59 +148,70 @@ class Repository @Inject constructor(
         app.disableList.sortBy { list -> list.label.toString() }
     }
 
-    private suspend fun queryPackage(flags: Int = MATCH_UNINSTALLED): MutableList<ResolveInfo> =
-        withContext(Dispatchers.IO) {
-            val i = Intent(Intent.ACTION_MAIN, null)
-            i.addCategory(Intent.CATEGORY_LAUNCHER)
-            if (TargetApi.T) {
-                pm.queryIntentActivities(
-                    i,
-                    PackageManager.ResolveInfoFlags.of(flags.toLong())
-                )
-            } else {
-                pm.queryIntentActivities(i, flags)
-            }
-        }
-
-    private suspend fun queryInstalledPackages(flags: Int = PackageManager.MATCH_ALL): List<PackageInfo> =
-        withContext(Dispatchers.IO) {
-            if (TargetApi.T) {
-                pm.getInstalledPackages(
-                    PackageManager.PackageInfoFlags.of(
-                        flags.toLong()
-                    )
-                )
-            } else pm.getInstalledPackages(flags)
-        }
-
-
-    private fun asInterface(className: String, serviceName: String): Any =
-        ShizukuBinderWrapper(SystemServiceHelper.getSystemService(serviceName)).let {
-            Class.forName("$className\$Stub").run {
-                getMethod("asInterface", IBinder::class.java).invoke(null, it)
-            }
-        }
-
-    private fun isDisabled(packageName: String) =
-        getPackageInfoOrNull(packageName)?.applicationInfo?.enabled?.not() ?: false
-
-    private fun getPackageInfoOrNull(packageName: String, flags: Int = Consts.MATCH_UNINSTALLED) =
-        runCatching {
-            if (TargetApi.T) context.packageManager.getPackageInfo(
-                packageName,
-                PackageManager.PackageInfoFlags.of(flags.toLong())
+    private fun forceStopApp(packageName: String) = runCatching {
+        asInterface("android.app.IActivityManager", "activity").let {
+            it::class.java.getMethod(
+                "forceStopPackage", String::class.java, Int::class.java
+            ).invoke(
+                it, packageName, myUserId
             )
-            else context.packageManager.getPackageInfo(packageName, flags)
-        }.getOrNull()
-
-
-    inline fun <T> checkShizuku(block: () -> T): T? {
-        checkPermission().also {
-            it.logCat()
-            if (!it) {
-                emitEvent(context.getString(R.string.error), Consts.CHECK_FALSE)
-            } else return block()
         }
-        return null
+        true
+    }.getOrElse { false }
+
+private suspend fun queryPackage(flags: Int = MATCH_UNINSTALLED): MutableList<ResolveInfo> =
+    withContext(Dispatchers.IO) {
+        val i = Intent(Intent.ACTION_MAIN, null)
+        i.addCategory(Intent.CATEGORY_LAUNCHER)
+        if (TargetApi.T) {
+            pm.queryIntentActivities(
+                i,
+                PackageManager.ResolveInfoFlags.of(flags.toLong())
+            )
+        } else {
+            pm.queryIntentActivities(i, flags)
+        }
     }
+
+private suspend fun queryInstalledPackages(flags: Int = PackageManager.MATCH_ALL): List<PackageInfo> =
+    withContext(Dispatchers.IO) {
+        if (TargetApi.T) {
+            pm.getInstalledPackages(
+                PackageManager.PackageInfoFlags.of(
+                    flags.toLong()
+                )
+            )
+        } else pm.getInstalledPackages(flags)
+    }
+
+
+private fun asInterface(className: String, serviceName: String): Any =
+    ShizukuBinderWrapper(SystemServiceHelper.getSystemService(serviceName)).let {
+        Class.forName("$className\$Stub").run {
+            getMethod("asInterface", IBinder::class.java).invoke(null, it)
+        }
+    }
+
+private fun isDisabled(packageName: String) =
+    getPackageInfoOrNull(packageName)?.applicationInfo?.enabled?.not() ?: false
+
+private fun getPackageInfoOrNull(packageName: String, flags: Int = Consts.MATCH_UNINSTALLED) =
+    runCatching {
+        if (TargetApi.T) context.packageManager.getPackageInfo(
+            packageName,
+            PackageManager.PackageInfoFlags.of(flags.toLong())
+        )
+        else context.packageManager.getPackageInfo(packageName, flags)
+    }.getOrNull()
+
+
+inline fun <T> checkShizuku(block: () -> T): T? {
+    checkPermission().also {
+        it.logCat()
+        if (!it) {
+            emitEvent(context.getString(R.string.error), Consts.CHECK_FALSE)
+        } else return block()
+    }
+    return null
+}
 }
