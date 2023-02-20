@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.cardStart.setOnClickListener {
-            AlertDialogFragment(getString(R.string.title), getString(R.string.head_tips)) {
+            AlertDialogFragment(getString(R.string.title), getString(R.string.head_tips), getString(R.string.confirm), true) {
                 viewModel.checkShizuku {
                     binding.tvHead.text = getString(R.string.running)
                     binding.cardStart.isEnabled = false
@@ -69,11 +69,12 @@ class MainActivity : AppCompatActivity() {
         binding.layoutHelp.setOnClickListener {
             AlertDialogFragment(
                 getString(R.string.title),
-                getString(R.string.uninstall_detail)
+                getString(R.string.uninstall_detail),
+                getString(R.string.ok)
             ) { }.show(supportFragmentManager, AlertDialogFragment.TAG)
         }
         binding.layoutAbout.setOnClickListener {
-            AlertDialogFragment(getString(R.string.app_name), BuildConfig.VERSION_NAME) { }
+            AlertDialogFragment(getString(R.string.app_name), BuildConfig.VERSION_NAME, getString(R.string.ok)) { }
                 .show(
                 supportFragmentManager,
                 AlertDialogFragment.TAG

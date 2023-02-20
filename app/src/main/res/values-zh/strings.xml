@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Achro</string>
     <string name="ok">确定</string>
+    <string name="confirm">确认清除</string>
     <string name="cancel">取消</string>
     <string name="finish">已清除</string>
     <string name="running">清除中</string>
