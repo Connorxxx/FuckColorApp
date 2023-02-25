@@ -207,8 +207,7 @@ private fun getPackageInfoOrNull(packageName: String, flags: Int = Consts.MATCH_
 
 inline fun <T> checkShizuku(block: () -> T): T? {
     checkPermission().also {
-        it.logCat()
-        if (!it) {
+        if (!it && !BuildConfig.DEBUG) {
             emitEvent(context.getString(R.string.error), Consts.CHECK_FALSE)
         } else return block()
     }

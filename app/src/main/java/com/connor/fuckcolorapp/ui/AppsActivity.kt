@@ -1,6 +1,8 @@
 package com.connor.fuckcolorapp.ui
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TableLayout
 import androidx.activity.viewModels
@@ -39,6 +41,11 @@ class AppsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeButtonEnabled(true)
+        }
         binding.pageTab.adapter = tabPagerAdapter
         binding.pageTab.offscreenPageLimit = 2
         TabLayoutMediator(binding.tab, binding.pageTab) { tab, position ->
@@ -83,5 +90,16 @@ class AppsActivity : AppCompatActivity() {
         receiveEvent<String>(Consts.CHECK_FALSE) {
             showToast(it)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_apps, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> onBackPressedDispatcher.onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
