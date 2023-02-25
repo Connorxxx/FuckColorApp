@@ -63,9 +63,26 @@ class AppsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getAll() {
-        repository.getAllAppList()
+    private suspend fun getAll(value: CharSequence = "") {
+        repository.getAllAppList(value)
         _listEvent.emit(AppLoad.AllLoaded)
+    }
+
+    fun queryAll(value: CharSequence) {
+        viewModelScope.launch(Dispatchers.Default) {
+            launch {
+                getUser(value)
+            }
+            launch {
+                getSystem(value)
+            }
+            launch {
+                getAll(value)
+            }
+            launch {
+                getDisable(value)
+            }
+        }
     }
 
     fun loadDisable() {
@@ -74,8 +91,8 @@ class AppsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getDisable() {
-        repository.getDisableList()
+    private suspend fun getDisable(value: CharSequence = "") {
+        repository.getDisableList(value)
         _listEvent.emit(AppLoad.DisableLoaded)
     }
 
@@ -85,8 +102,8 @@ class AppsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getSystem() {
-        repository.getSystemAppList()
+    private suspend fun getSystem(value: CharSequence = "") {
+        repository.getSystemAppList(value)
         _listEvent.emit(AppLoad.SystemLoaded)
     }
 
@@ -96,8 +113,8 @@ class AppsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getUser() {
-        repository.getUserAppList()
+    private suspend fun getUser(value: CharSequence = "") {
+        repository.getUserAppList(value)
         _listEvent.emit(AppLoad.UserLoaded)
     }
 

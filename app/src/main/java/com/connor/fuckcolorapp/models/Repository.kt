@@ -90,59 +90,47 @@ class Repository @Inject constructor(
         }.getOrElse { false }  //Il0O
     } ?: false
 
-    suspend fun getUserAppList() = queryPackage().filter { !it.isSystemApp }.also { query ->
+    suspend fun getUserAppList(value: CharSequence = "") = queryPackage().filter { !it.isSystemApp }.also { query ->
         app.userAppList.clear()
         query.forEach {
-            app.userAppList.add(
-                AppInfo(
-                    it.loadLabel(pm),
-                    it.activityInfo.packageName,
-                    it.loadIcon(pm)
-                )
-            )
+            val label = it.loadLabel(pm)
+            if (label.contains(value)) {
+                app.userAppList.add(AppInfo(label, it.activityInfo.packageName, it.loadIcon(pm)))
+            }
         }
         app.userAppList.sortBy { list -> list.label.toString() }
     }
 
-    suspend fun getSystemAppList() = queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
+    suspend fun getSystemAppList(value: CharSequence = "") = queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
         app.systemAppList.clear()
         query.forEach {
-            app.systemAppList.add(
-                AppInfo(
-                    it.loadLabel(pm),
-                    it.activityInfo.packageName,
-                    it.loadIcon(pm)
-                )
-            )
+            val label = it.loadLabel(pm)
+            if (label.contains(value)) {
+                app.systemAppList.add(AppInfo(label, it.activityInfo.packageName, it.loadIcon(pm)))
+            }
         }
         app.systemAppList.sortBy { list -> list.label.toString() }
     }
 
-    suspend fun getAllAppList() = queryInstalledPackages().also { query ->
+    suspend fun getAllAppList(value: CharSequence = "") = queryInstalledPackages().also { query ->
         app.allAppList.clear()
         query.forEach {
-            app.allAppList.add(
-                AppInfo(
-                    it.applicationInfo.loadLabel(pm),
-                    it.packageName,
-                    it.applicationInfo.loadIcon(pm)
-                )
-            )
+            val label = it.applicationInfo.loadLabel(pm)
+            if (label.contains(value)) {
+                app.allAppList.add(AppInfo(label, it.packageName, it.applicationInfo.loadIcon(pm)))
+            }
         }
         app.allAppList.sortBy { list -> list.label.toString() }
     }
 
-    suspend fun getDisableList() = queryInstalledPackages().also { query ->
+    suspend fun getDisableList(value: CharSequence = "") = queryInstalledPackages().also { query ->
         app.disableList.clear()
         query.forEach {
+            val label = it.applicationInfo.loadLabel(pm)
             if (isDisabled(it.packageName)) {
-                app.disableList.add(
-                    AppInfo(
-                        it.applicationInfo.loadLabel(pm),
-                        it.packageName,
-                        it.applicationInfo.loadIcon(pm)
-                    )
-                )
+                if (label.contains(value)) {
+                    app.disableList.add(AppInfo(label, it.packageName, it.applicationInfo.loadIcon(pm)))
+                }
             }
         }
         app.disableList.sortBy { list -> list.label.toString() }
