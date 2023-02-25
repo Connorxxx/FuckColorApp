@@ -7,29 +7,36 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
-import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.FragmentAllAppsBinding
-import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.repeatOnLifecycle
 import com.connor.fuckcolorapp.states.AppLoad
+import com.connor.fuckcolorapp.states.onAll
+import com.connor.fuckcolorapp.states.onAllLoaded
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
 import com.connor.fuckcolorapp.ui.adapter.FooterAdapter
 import com.connor.fuckcolorapp.ui.adapter.HeaderAdapter
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AllAppsFragment : Fragment() {
 
-    @Inject lateinit var app: App
-    @Inject lateinit var appListAdapter: AppListAdapter
-    @Inject lateinit var headerAdapter: HeaderAdapter
-    @Inject lateinit var footerAdapter: FooterAdapter
+    @Inject
+    lateinit var app: App
+    @Inject
+    lateinit var appListAdapter: AppListAdapter
+    @Inject
+    lateinit var headerAdapter: HeaderAdapter
+    @Inject
+    lateinit var footerAdapter: FooterAdapter
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
@@ -59,21 +66,31 @@ class AllAppsFragment : Fragment() {
             }
         }
         binding.swipeAll.setOnRefreshListener {
-            viewModel.setAllAppsLoading()
+            //   viewModel.setAllAppsLoading()
             viewModel.loadAll()
         }
     }
 
     private fun initScope() {
-        repeatOnLifecycle {
-            viewModel.allListState.collect {
-                binding.progressAll.isVisible = it == AppLoad.Loading
-                when (it) {
-                    is AppLoad.AllLoaded -> {
-                        binding.swipeAll.isRefreshing = false
-                        appListAdapter.submitList(ArrayList(app.allAppList))
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.listEvent.collect {
+                        binding.progressAll.isVisible = false
+                        it.onAllLoaded {
+                            binding.swipeAll.isRefreshing = false
+                            appListAdapter.submitList(ArrayList(app.allAppList))
+                        }
                     }
-                    else -> {}
+                }
+                launch {
+                    viewModel.listState.collect {
+                        binding.progressAll.isVisible = false
+                        it.onAll {
+                            appListAdapter.submitList(ArrayList(app.allAppList))
+                            binding.swipeAll.isRefreshing = false
+                        }
+                    }
                 }
             }
         }

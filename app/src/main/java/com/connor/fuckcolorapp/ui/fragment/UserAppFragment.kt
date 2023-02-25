@@ -14,14 +14,16 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentUserAppBinding
-import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.repeatOnLifecycle
 import com.connor.fuckcolorapp.states.AppLoad
+import com.connor.fuckcolorapp.states.onAll
+import com.connor.fuckcolorapp.states.onUserLoaded
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
 import com.connor.fuckcolorapp.ui.adapter.FooterAdapter
 import com.connor.fuckcolorapp.ui.adapter.HeaderAdapter
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -61,22 +63,31 @@ class UserAppFragment : Fragment() {
             }
         }
         binding.swipeUser.setOnRefreshListener {
-            viewModel.setUserLoading()
+         //   viewModel.setUserLoading()
             viewModel.loadUser()
         }
     }
 
     private fun initScope() {
-        repeatOnLifecycle {
-            viewModel.appListState.collect {
-                binding.progressUser.isVisible = it == AppLoad.Loading
-               // binding.rvUser.isVisible = it != AppLoad.Loading
-                when (it) {
-                    is AppLoad.UserLoaded -> {
-                        appListAdapter.submitList(ArrayList(app.userAppList))
-                        binding.swipeUser.isRefreshing = false
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.listEvent.collect {
+                        it.onUserLoaded {
+                            binding.progressUser.isVisible = false
+                            appListAdapter.submitList(ArrayList(app.userAppList))
+                            binding.swipeUser.isRefreshing = false
+                        }
                     }
-                    else -> {}
+                }
+                launch {
+                    viewModel.listState.collect {
+                        it.onAll {
+                            binding.progressUser.isVisible = false
+                            appListAdapter.submitList(ArrayList(app.userAppList))
+                            binding.swipeUser.isRefreshing = false
+                        }
+                    }
                 }
             }
         }

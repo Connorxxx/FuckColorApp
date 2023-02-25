@@ -27,7 +27,6 @@ class AppInstallerActivity : AppCompatActivity() {
                     input?.copyTo(out)
                 }
             }
-            file.absolutePath.logCat()
         }
     }
 }

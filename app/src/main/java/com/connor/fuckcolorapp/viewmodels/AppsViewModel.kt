@@ -3,12 +3,13 @@ package com.connor.fuckcolorapp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.connor.fuckcolorapp.App
-import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.models.Repository
 import com.connor.fuckcolorapp.states.AppLoad
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,19 +20,13 @@ class AppsViewModel @Inject constructor(
     private val app: App
 ) : ViewModel() {
 
-    private val _appListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
-    val appListState = _appListState.asStateFlow()
+    private val _listState = MutableStateFlow<AppLoad>(AppLoad.Loading)
+    val listState = _listState.asStateFlow()
 
-    private val _systemListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
-    val systemListState = _systemListState.asStateFlow()
+    private val _listEvent = MutableSharedFlow<AppLoad>()
+    val listEvent = _listEvent.asSharedFlow()
 
-    private val _allListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
-    val allListState = _allListState.asStateFlow()
-
-    private val _disableListState = MutableStateFlow<AppLoad>(AppLoad.Loading)
-    val disableListState = _disableListState.asStateFlow()
-
-    val hasCheck get() = app.userAppList.any { it.isCheck } || app.systemAppList.any { it.isCheck }  || app.allAppList.any { it.isCheck }
+    val hasCheck get() = app.userAppList.any { it.isCheck } || app.systemAppList.any { it.isCheck } || app.allAppList.any { it.isCheck }
 
     init {
         if (app.userAppList.isEmpty() || app.systemAppList.isEmpty())
@@ -67,9 +62,10 @@ class AppsViewModel @Inject constructor(
             getAll()
         }
     }
+
     private suspend fun getAll() {
         repository.getAllAppList()
-        _allListState.emit(AppLoad.AllLoaded)
+        _listEvent.emit(AppLoad.AllLoaded)
     }
 
     fun loadDisable() {
@@ -80,7 +76,7 @@ class AppsViewModel @Inject constructor(
 
     private suspend fun getDisable() {
         repository.getDisableList()
-        _disableListState.emit(AppLoad.DisableLoaded)
+        _listEvent.emit(AppLoad.DisableLoaded)
     }
 
     fun loadSystem() {
@@ -88,9 +84,10 @@ class AppsViewModel @Inject constructor(
             getSystem()
         }
     }
+
     private suspend fun getSystem() {
         repository.getSystemAppList()
-        _systemListState.emit(AppLoad.SystemLoaded)
+        _listEvent.emit(AppLoad.SystemLoaded)
     }
 
     fun loadUser() {
@@ -101,38 +98,13 @@ class AppsViewModel @Inject constructor(
 
     private suspend fun getUser() {
         repository.getUserAppList()
-        _appListState.emit(AppLoad.UserLoaded)
+        _listEvent.emit(AppLoad.UserLoaded)
     }
 
-
-    fun setUserLoading() {
-        _appListState.value = AppLoad.Nothing
-    }
-
-    fun setSystemLoading() {
-        _systemListState.value = AppLoad.Nothing
-    }
-
-    fun setAllAppsLoading() {
-        _allListState.value = AppLoad.Nothing
-    }
-
-    fun setDisableLoading() {
-        _disableListState.value = AppLoad.Nothing
-    }
-
-    fun setLoading() {
-        _appListState.value = AppLoad.Nothing
-        _systemListState.value = AppLoad.Nothing
-        _allListState.value = AppLoad.Nothing
-        _disableListState.value = AppLoad.Nothing
-    }
-
-    fun upload() {
-        _appListState.value = AppLoad.UserLoaded
-        _systemListState.value = AppLoad.SystemLoaded
-        _allListState.value = AppLoad.AllLoaded
-        _disableListState.value = AppLoad.DisableLoaded
+    private fun upload() {
+        viewModelScope.launch {
+            _listState.emit(AppLoad.All)
+        }
     }
 
 }

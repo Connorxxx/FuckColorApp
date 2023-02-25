@@ -1,6 +1,5 @@
 package com.connor.fuckcolorapp.ui.fragment
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,19 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
-import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.FragmentDisableBinding
 import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.repeatOnLifecycle
-import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.states.AppLoad
+import com.connor.fuckcolorapp.states.onAll
+import com.connor.fuckcolorapp.states.onDisableLoaded
 import com.connor.fuckcolorapp.ui.adapter.DisableListAdapter
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ActivityContext
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -51,25 +52,35 @@ class DisableFragment : Fragment() {
         }
         disableListAdapter.setClickListener { info ->
             viewModel.setAppEnable(info.packageName.toString())
-            viewModel.setDisableLoading()
             viewModel.loadDisable()
+            viewModel.loadUser()
+            viewModel.loadSystem()
         }
         binding.swipeDisable.setOnRefreshListener {
-            viewModel.setDisableLoading()
             viewModel.loadDisable()
         }
     }
 
     private fun initScope() {
-        repeatOnLifecycle {
-            viewModel.disableListState.collect {
-                binding.progressDisable.isVisible = it == AppLoad.Loading
-                when (it) {
-                    AppLoad.DisableLoaded -> {
-                        binding.swipeDisable.isRefreshing = false
-                        disableListAdapter.submitList(ArrayList(app.disableList))
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.listEvent.collect {
+                        binding.progressDisable.isVisible = false
+                        it.onDisableLoaded {
+                            binding.swipeDisable.isRefreshing = false
+                            disableListAdapter.submitList(ArrayList(app.disableList))
+                        }
                     }
-                    else -> {}
+                }
+                launch {
+                    viewModel.listState.collect {
+                        binding.progressDisable.isVisible = false
+                        it.onAll {
+                            disableListAdapter.submitList(ArrayList(app.disableList))
+                            binding.swipeDisable.isRefreshing = false   //bypass
+                        }
+                    }
                 }
             }
         }

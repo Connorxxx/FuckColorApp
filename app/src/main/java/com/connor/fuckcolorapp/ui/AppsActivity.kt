@@ -47,7 +47,7 @@ class AppsActivity : AppCompatActivity() {
             setHomeButtonEnabled(true)
         }
         binding.pageTab.adapter = tabPagerAdapter
-        binding.pageTab.offscreenPageLimit = 2
+        binding.pageTab.offscreenPageLimit = 3
         TabLayoutMediator(binding.tab, binding.pageTab) { tab, position ->
             tab.text = tabPagerAdapter.getPageTitle(position)
 
@@ -77,7 +77,7 @@ class AppsActivity : AppCompatActivity() {
         binding.fabPure.setOnClickListener { view ->
             if (viewModel.hasCheck) {
                 view.isEnabled = false
-                viewModel.setLoading()
+              //  viewModel.setLoading()
                 startService<PackageService> {
                     putExtra("is_select", true)
                 }

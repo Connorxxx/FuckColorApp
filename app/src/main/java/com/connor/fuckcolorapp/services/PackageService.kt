@@ -134,7 +134,6 @@ class PackageService : LifecycleService() {
         }
         val disableAllList = app.allAppList.filter { it.isCheck }
         val disableAllResult = async {
-            disableAllList.size.logCat()
             disableAllList.forEach {
                 repository.setAppState(it.packageName.toString())
             }
