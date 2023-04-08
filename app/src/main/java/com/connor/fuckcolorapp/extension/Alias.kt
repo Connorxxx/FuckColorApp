@@ -1,7 +1,6 @@
 package com.connor.fuckcolorapp.extension
 
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import com.connor.fuckcolorapp.models.AppInfo
+import android.view.LayoutInflater
+import android.view.ViewGroup
 
-typealias InfoListener = (AppInfo) -> Unit
+typealias Inflater<VB> = (LayoutInflater, ViewGroup?, Boolean) -> VB

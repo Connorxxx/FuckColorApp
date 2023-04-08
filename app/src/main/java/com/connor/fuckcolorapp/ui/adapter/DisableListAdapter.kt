@@ -4,15 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.ItemDisableAppBinding
+import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.models.AppInfo
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.FragmentScoped
@@ -20,7 +14,11 @@ import javax.inject.Inject
 
 @FragmentScoped
 class DisableListAdapter @Inject constructor(@ActivityContext val context: Context) :
-    BaseAdapter<AppInfo, ItemDisableAppBinding>(FlowerDiffCallback) {
+    BaseAdapter<AppInfo, ItemDisableAppBinding>(InfoDiffCallback) {
+
+    override val inflater: Inflater<ItemDisableAppBinding> get() = ItemDisableAppBinding::inflate
+
+    override fun getViewHolder(binding: ItemDisableAppBinding) = DisableHolder(binding)
 
     inner class DisableHolder(binding: ItemDisableAppBinding) : BaseViewHolder(binding) {
         init {
@@ -44,9 +42,4 @@ class DisableListAdapter @Inject constructor(@ActivityContext val context: Conte
             binding.imgIcon.load(data.icon)
         }
     }
-
-    override val inflater: (LayoutInflater, ViewGroup?, Boolean) -> ItemDisableAppBinding
-        get() = ItemDisableAppBinding::inflate
-
-    override fun getViewHolder(binding: ItemDisableAppBinding) = DisableHolder(binding)
 }

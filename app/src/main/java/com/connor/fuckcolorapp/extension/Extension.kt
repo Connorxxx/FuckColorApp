@@ -1,5 +1,6 @@
 package com.connor.fuckcolorapp.extension
 
+import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -68,7 +69,7 @@ inline fun <reified T> Context.intent(builder: Intent.() -> Unit = {}): Intent =
 inline fun <reified T : Service> Context.startService(block: Intent.() -> Unit = {}) =
     startService(intent<T>(block))
 
-inline fun <reified T> Context.startActivity(block: Intent.() -> Unit = {}) =
+inline fun <reified T : Activity> Context.startActivity(block: Intent.() -> Unit = {}) =
     startActivity(intent<T>(block))
 
 inline fun Fragment.repeatOnStart(crossinline block: CoroutineScope.() -> Unit) {

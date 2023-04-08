@@ -7,18 +7,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.models.AppInfo
 
 abstract class BaseAdapter<T: Any, VB: ViewBinding>(config: DiffUtil.ItemCallback<T>) :
     ListAdapter<T, BaseAdapter<T, VB>.BaseViewHolder>(config) {
 
-    var listener: ((AppInfo) -> Unit)? = null
+    var listener: ((T) -> Unit)? = null
 
-    fun setClickListener(l: (AppInfo) -> Unit) {
+    fun setClickListener(l: (T) -> Unit) {
         listener = l
     }
 
-    abstract val inflater: (LayoutInflater, ViewGroup?, Boolean) -> VB
+    abstract val inflater: Inflater<VB>
 
     abstract fun getViewHolder(binding: VB): BaseViewHolder
 

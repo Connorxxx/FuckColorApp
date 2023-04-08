@@ -3,11 +3,10 @@ package com.connor.fuckcolorapp.ui.adapter
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import coil.load
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.ItemAppInfoBinding
+import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.models.AppInfo
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.FragmentScoped
@@ -15,11 +14,13 @@ import javax.inject.Inject
 
 @FragmentScoped
 class AppListAdapter @Inject constructor(@ActivityContext val context: Context) :
-    BaseAdapter<AppInfo, ItemAppInfoBinding>(FlowerDiffCallback) {
+    BaseAdapter<AppInfo, ItemAppInfoBinding>(InfoDiffCallback) {
 
-    inner class ViewHolder(binding: ItemAppInfoBinding) :
-        BaseViewHolder(binding) {
+    override val inflater: Inflater<ItemAppInfoBinding> get() = ItemAppInfoBinding::inflate
 
+    override fun getViewHolder(binding: ItemAppInfoBinding) = ViewHolder(binding)
+
+    inner class ViewHolder(binding: ItemAppInfoBinding) : BaseViewHolder(binding) {
         init {
             binding.cardApp.setOnClickListener {
                 binding.m?.let {
@@ -39,16 +40,10 @@ class AppListAdapter @Inject constructor(@ActivityContext val context: Context) 
                 }
             }
         }
-
         override fun bind(data: AppInfo) {
             binding.m = data
             binding.imgIcon.load(data.icon)
         }
     }
-
-    override val inflater: (LayoutInflater, ViewGroup?, Boolean) -> ItemAppInfoBinding
-        get() = ItemAppInfoBinding::inflate
-
-    override fun getViewHolder(binding: ItemAppInfoBinding) = ViewHolder(binding)
 }
 

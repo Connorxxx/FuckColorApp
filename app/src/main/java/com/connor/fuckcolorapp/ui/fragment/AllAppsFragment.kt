@@ -67,7 +67,6 @@ class AllAppsFragment : Fragment() {
             }
         }
         binding.swipeAll.setOnRefreshListener {
-            //   viewModel.setAllAppsLoading()
             viewModel.loadAll()
         }
     }

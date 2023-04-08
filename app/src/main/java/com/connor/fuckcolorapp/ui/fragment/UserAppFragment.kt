@@ -26,10 +26,14 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class UserAppFragment : Fragment() {
 
-    @Inject lateinit var app: App
-    @Inject lateinit var appListAdapter: AppListAdapter
-    @Inject lateinit var headerAdapter: HeaderAdapter
-    @Inject lateinit var footerAdapter: FooterAdapter
+    @Inject
+    lateinit var app: App
+    @Inject
+    lateinit var appListAdapter: AppListAdapter
+    @Inject
+    lateinit var headerAdapter: HeaderAdapter
+    @Inject
+    lateinit var footerAdapter: FooterAdapter
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
@@ -60,37 +64,35 @@ class UserAppFragment : Fragment() {
             }
         }
         binding.swipeUser.setOnRefreshListener {
-         //   viewModel.setUserLoading()
             viewModel.loadUser()
         }
     }
 
     private fun initScope() {
         repeatOnStart {
-                launch {
-                    viewModel.listEvent.collect {
-                        it.onUserLoaded {
-                            binding.progressUser.isVisible = false
-                            appListAdapter.submitList(ArrayList(app.userAppList))
-                            binding.swipeUser.isRefreshing = false
-                        }
-                    }
-                }
-                launch {
-                    viewModel.listState.collect {
-                        it.onAll {
-                            binding.progressUser.isVisible = false
-                            appListAdapter.submitList(ArrayList(app.userAppList))
-                            binding.swipeUser.isRefreshing = false
-                        }
+            launch {
+                viewModel.listEvent.collect {
+                    it.onUserLoaded {
+                        binding.progressUser.isVisible = false
+                        appListAdapter.submitList(ArrayList(app.userAppList))
+                        binding.swipeUser.isRefreshing = false
                     }
                 }
             }
+            launch {
+                viewModel.listState.collect {
+                    it.onAll {
+                        binding.progressUser.isVisible = false
+                        appListAdapter.submitList(ArrayList(app.userAppList))
+                        binding.swipeUser.isRefreshing = false
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
-
 }

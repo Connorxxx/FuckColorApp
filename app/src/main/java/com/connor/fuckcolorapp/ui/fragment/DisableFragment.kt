@@ -49,11 +49,12 @@ class DisableFragment : Fragment() {
             adapter = disableListAdapter
         }
         disableListAdapter.setClickListener { info ->
-            info.logCat()
-            viewModel.setAppEnable(info.packageName.toString())
-            viewModel.loadDisable()
-            viewModel.loadUser()
-            viewModel.loadSystem()
+            with(viewModel) {
+                setAppEnable(info.packageName.toString())
+                loadDisable()
+                loadUser()
+                loadSystem()
+            }
         }
         binding.swipeDisable.setOnRefreshListener {
             viewModel.loadDisable()

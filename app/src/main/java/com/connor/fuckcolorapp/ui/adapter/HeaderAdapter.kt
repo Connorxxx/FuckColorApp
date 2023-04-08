@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.connor.fuckcolorapp.databinding.HeaderItemBinding
+import com.connor.fuckcolorapp.extension.Inflater
 import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
@@ -11,6 +12,7 @@ import javax.inject.Inject
 class HeaderAdapter @Inject constructor() : RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
 
 
+    val inflater: Inflater<HeaderItemBinding> get() = HeaderItemBinding::inflate
     inner class ViewHolder(private val binding: HeaderItemBinding)
         : RecyclerView.ViewHolder(binding.root) {
         fun getBinding(): HeaderItemBinding {
@@ -19,13 +21,7 @@ class HeaderAdapter @Inject constructor() : RecyclerView.Adapter<HeaderAdapter.V
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding: HeaderItemBinding = HeaderItemBinding.inflate(
-            LayoutInflater.from(parent.context),
-            //R.layout.footer_item,
-            parent,
-            false
-        )
-        return ViewHolder(binding)
+        return ViewHolder(inflater(LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

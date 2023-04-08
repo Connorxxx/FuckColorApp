@@ -26,10 +26,14 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SystemAppFragment : Fragment() {
 
-    @Inject lateinit var app: App
-    @Inject lateinit var appListAdapter: AppListAdapter
-    @Inject lateinit var headerAdapter: HeaderAdapter
-    @Inject lateinit var footerAdapter: FooterAdapter
+    @Inject
+    lateinit var app: App
+    @Inject
+    lateinit var appListAdapter: AppListAdapter
+    @Inject
+    lateinit var headerAdapter: HeaderAdapter
+    @Inject
+    lateinit var footerAdapter: FooterAdapter
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
@@ -52,7 +56,6 @@ class SystemAppFragment : Fragment() {
             adapter = ConcatAdapter(headerAdapter, appListAdapter, footerAdapter)
         }
         appListAdapter.setClickListener { info ->
-            info.logCat()
             app.systemAppList.find {
                 it.label == info.label
             }?.also {
@@ -66,30 +69,29 @@ class SystemAppFragment : Fragment() {
 
     private fun initScope() {
         repeatOnStart {
-                launch {
-                    viewModel.listEvent.collect {
-                        binding.progressSystem.isVisible = false
-                        it.onSystemLoaded {
-                            binding.swipeSystem.isRefreshing = false
-                            appListAdapter.submitList(ArrayList(app.systemAppList))
-                        }
-                    }
-                }
-                launch {
-                    viewModel.listState.collect {
-                        binding.progressSystem.isVisible = false
-                        it.onAll {
-                            appListAdapter.submitList(ArrayList(app.systemAppList))
-                            binding.swipeSystem.isRefreshing = false
-                        }
+            launch {
+                viewModel.listEvent.collect {
+                    binding.progressSystem.isVisible = false
+                    it.onSystemLoaded {
+                        binding.swipeSystem.isRefreshing = false
+                        appListAdapter.submitList(ArrayList(app.systemAppList))
                     }
                 }
             }
+            launch {
+                viewModel.listState.collect {
+                    binding.progressSystem.isVisible = false
+                    it.onAll {
+                        appListAdapter.submitList(ArrayList(app.systemAppList))
+                        binding.swipeSystem.isRefreshing = false
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
-
 }

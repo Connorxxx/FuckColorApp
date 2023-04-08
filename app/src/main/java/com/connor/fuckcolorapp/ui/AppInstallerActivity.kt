@@ -1,15 +1,8 @@
 package com.connor.fuckcolorapp.ui
 
-import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toFile
 import com.connor.fuckcolorapp.databinding.ActivityAppInstallerBinding
-import com.connor.fuckcolorapp.extension.logCat
-import com.connor.fuckcolorapp.extension.showToast
 import java.io.File
 
 class AppInstallerActivity : AppCompatActivity() {

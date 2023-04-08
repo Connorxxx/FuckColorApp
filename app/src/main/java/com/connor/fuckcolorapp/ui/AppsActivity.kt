@@ -66,16 +66,14 @@ class AppsActivity : AppCompatActivity() {
         }
     }
 
-
     @OptIn(FlowPreview::class)
     private fun initScope() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    binding.editSearch.textChanges().debounce(700)
-                        .collect {
-                            viewModel.queryAll(it)
-                        }
+                    binding.editSearch.textChanges().debounce(700).collect {
+                        viewModel.queryAll(it)
+                    }
                 }
             }
         }
