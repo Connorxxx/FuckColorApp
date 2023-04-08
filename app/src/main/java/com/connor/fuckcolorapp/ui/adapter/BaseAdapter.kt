@@ -8,20 +8,21 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.connor.fuckcolorapp.extension.Inflater
+import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.models.AppInfo
 
 abstract class BaseAdapter<T: Any, VB: ViewBinding>(config: DiffUtil.ItemCallback<T>) :
     ListAdapter<T, BaseAdapter<T, VB>.BaseViewHolder>(config) {
 
-    var listener: ((T) -> Unit)? = null
+    protected var listener: ((T) -> Unit)? = null
 
     fun setClickListener(l: (T) -> Unit) {
         listener = l
     }
 
-    abstract val inflater: Inflater<VB>
+    protected abstract val inflater: Inflater<VB>
 
-    abstract fun getViewHolder(binding: VB): BaseViewHolder
+    protected abstract fun getViewHolder(binding: VB): BaseViewHolder
 
     abstract inner class BaseViewHolder(protected val binding: VB) :
         RecyclerView.ViewHolder(binding.root) {

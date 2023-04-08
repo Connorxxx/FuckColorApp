@@ -55,6 +55,7 @@ class SystemAppFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = ConcatAdapter(headerAdapter, appListAdapter, footerAdapter)
         }
+
         appListAdapter.setClickListener { info ->
             app.systemAppList.find {
                 it.label == info.label

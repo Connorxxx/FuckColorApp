@@ -59,7 +59,6 @@ class AllAppsFragment : Fragment() {
             adapter = ConcatAdapter(headerAdapter, appListAdapter, footerAdapter)
         }
         appListAdapter.setClickListener { info ->
-            info.logCat()
             app.allAppList.find {
                 it.label == info.label
             }?.also {

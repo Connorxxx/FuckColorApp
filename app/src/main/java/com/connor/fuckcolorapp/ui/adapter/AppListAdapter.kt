@@ -7,13 +7,14 @@ import coil.load
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.ItemAppInfoBinding
 import com.connor.fuckcolorapp.extension.Inflater
+import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.models.AppInfo
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
 @FragmentScoped
-class AppListAdapter @Inject constructor(@ActivityContext val context: Context) :
+class AppListAdapter @Inject constructor(@ActivityContext private val context: Context) :
     BaseAdapter<AppInfo, ItemAppInfoBinding>(InfoDiffCallback) {
 
     override val inflater: Inflater<ItemAppInfoBinding> get() = ItemAppInfoBinding::inflate
