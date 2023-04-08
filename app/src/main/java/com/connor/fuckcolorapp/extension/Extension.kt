@@ -1,5 +1,6 @@
 package com.connor.fuckcolorapp.extension
 
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.text.Editable
@@ -61,22 +62,19 @@ fun EditText.textChanges() = callbackFlow {
     }
 }
 
-inline fun <reified T> Context.startService(block: Intent.() -> Unit) {
-    val intent = Intent(this, T::class.java)
-    intent.block()
-    startService(intent)
-}
+inline fun <reified T> Context.intent(builder: Intent.() -> Unit = {}): Intent =
+    Intent(this, T::class.java).apply(builder)
 
-inline fun <reified T> Context.startActivity(block: Intent.() -> Unit) {
-    val intent = Intent(this, T::class.java)
-    intent.block()
-    startActivity(intent)
-}
+inline fun <reified T : Service> Context.startService(block: Intent.() -> Unit = {}) =
+    startService(intent<T>(block))
 
-inline fun Fragment.repeatOnLifecycle(crossinline block: suspend (CoroutineScope) -> Unit) {
+inline fun <reified T> Context.startActivity(block: Intent.() -> Unit = {}) =
+    startActivity(intent<T>(block))
+
+inline fun Fragment.repeatOnStart(crossinline block: CoroutineScope.() -> Unit) {
     viewLifecycleOwner.lifecycleScope.launch {
         viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            block(this)
+            block()
         }
     }
 }

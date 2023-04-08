@@ -7,15 +7,12 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentUserAppBinding
-import com.connor.fuckcolorapp.extension.repeatOnLifecycle
-import com.connor.fuckcolorapp.states.AppLoad
+import com.connor.fuckcolorapp.extension.logCat
+import com.connor.fuckcolorapp.extension.repeatOnStart
 import com.connor.fuckcolorapp.states.onAll
 import com.connor.fuckcolorapp.states.onUserLoaded
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
@@ -23,7 +20,6 @@ import com.connor.fuckcolorapp.ui.adapter.FooterAdapter
 import com.connor.fuckcolorapp.ui.adapter.HeaderAdapter
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -56,6 +52,7 @@ class UserAppFragment : Fragment() {
             adapter = ConcatAdapter(headerAdapter, appListAdapter, footerAdapter)
         }
         appListAdapter.setClickListener { info ->
+            info.logCat()
             app.userAppList.find {
                 it.label == info.label
             }?.also {
@@ -69,8 +66,7 @@ class UserAppFragment : Fragment() {
     }
 
     private fun initScope() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        repeatOnStart {
                 launch {
                     viewModel.listEvent.collect {
                         it.onUserLoaded {
@@ -90,7 +86,6 @@ class UserAppFragment : Fragment() {
                     }
                 }
             }
-        }
     }
 
     override fun onDestroy() {

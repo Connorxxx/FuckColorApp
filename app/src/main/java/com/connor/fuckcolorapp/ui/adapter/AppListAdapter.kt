@@ -5,12 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.ItemAppInfoBinding
 import com.connor.fuckcolorapp.models.AppInfo
@@ -20,25 +15,10 @@ import javax.inject.Inject
 
 @FragmentScoped
 class AppListAdapter @Inject constructor(@ActivityContext val context: Context) :
-    ListAdapter<AppInfo, AppListAdapter.ViewHolder>(FlowerDiffCallback) {
-    object FlowerDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
-        override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
-            return oldItem.packageName == newItem.packageName
-        }
+    BaseAdapter<AppInfo, ItemAppInfoBinding>(FlowerDiffCallback) {
 
-        override fun areContentsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-    var listener: ((AppInfo) -> Unit?)? = null
-
-    fun setClickListener(listener: (AppInfo) -> Unit) {
-        this.listener = listener
-    }
-
-    inner class ViewHolder(private val binding: ItemAppInfoBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(binding: ItemAppInfoBinding) :
+        BaseViewHolder(binding) {
 
         init {
             binding.cardApp.setOnClickListener {
@@ -60,25 +40,15 @@ class AppListAdapter @Inject constructor(@ActivityContext val context: Context) 
             }
         }
 
-        fun bind(appInfo: AppInfo) {
-            binding.m = appInfo
-            binding.imgIcon.load(appInfo.icon)
+        override fun bind(data: AppInfo) {
+            binding.m = data
+            binding.imgIcon.load(data.icon)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppListAdapter.ViewHolder {
-        val binding: ItemAppInfoBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            R.layout.item_app_info,
-            parent,
-            false
-        )
-        return ViewHolder(binding)
-    }
+    override val inflater: (LayoutInflater, ViewGroup?, Boolean) -> ItemAppInfoBinding
+        get() = ItemAppInfoBinding::inflate
 
-    override fun onBindViewHolder(holder: AppListAdapter.ViewHolder, position: Int) {
-        val repo = getItem(position)
-        holder.bind(repo)
-    }
+    override fun getViewHolder(binding: ItemAppInfoBinding) = ViewHolder(binding)
 }
 

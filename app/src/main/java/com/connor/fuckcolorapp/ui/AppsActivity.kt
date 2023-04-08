@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -52,14 +53,19 @@ class AppsActivity : AppCompatActivity() {
         initClick()
         initShare()
         initScope()
+        initBackPressed()
     }
 
-    override fun onBackPressed() {
-        with(binding.editSearch) {
-            if (!text.isNullOrEmpty()) { setText(""); isVisible = false }
-            else onBackPressedDispatcher.onBackPressed()
+    private fun initBackPressed() {
+        onBackPressedDispatcher.addCallback(this) {
+            with(binding.editSearch) {
+                if (!text.isNullOrEmpty()) {
+                    setText(""); isVisible = false
+                } else finish()
+            }
         }
     }
+
 
     @OptIn(FlowPreview::class)
     private fun initScope() {
@@ -110,7 +116,6 @@ class AppsActivity : AppCompatActivity() {
         binding.pageTab.offscreenPageLimit = 3
         TabLayoutMediator(binding.tab, binding.pageTab) { tab, position ->
             tab.text = tabPagerAdapter.getPageTitle(position)
-
         }.attach()
         binding.tab.selectedTabPosition
         binding.tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {

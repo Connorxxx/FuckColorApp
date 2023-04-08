@@ -20,27 +20,9 @@ import javax.inject.Inject
 
 @FragmentScoped
 class DisableListAdapter @Inject constructor(@ActivityContext val context: Context) :
-    ListAdapter<AppInfo, DisableListAdapter.ViewHolder>(FlowerDiffCallback) {
+    BaseAdapter<AppInfo, ItemDisableAppBinding>(FlowerDiffCallback) {
 
-    object FlowerDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
-        override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
-            return oldItem.packageName == newItem.packageName
-        }
-
-        override fun areContentsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-    var listener: ((AppInfo) -> Unit?)? = null
-
-    fun setClickListener(listener: (AppInfo) -> Unit) {
-        this.listener = listener
-    }
-
-    inner class ViewHolder(private val binding: ItemDisableAppBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
+    inner class DisableHolder(binding: ItemDisableAppBinding) : BaseViewHolder(binding) {
         init {
             binding.cardApp.setOnClickListener {
                 binding.m?.let {
@@ -57,25 +39,14 @@ class DisableListAdapter @Inject constructor(@ActivityContext val context: Conte
             }
         }
 
-        fun bind(appInfo: AppInfo) {
-            binding.m = appInfo
-            binding.imgIcon.load(appInfo.icon)
+        override fun bind(data: AppInfo) {
+            binding.m = data
+            binding.imgIcon.load(data.icon)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding: ItemDisableAppBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            R.layout.item_disable_app,
-            parent,
-            false
-        )
-        return ViewHolder(binding)
-    }
+    override val inflater: (LayoutInflater, ViewGroup?, Boolean) -> ItemDisableAppBinding
+        get() = ItemDisableAppBinding::inflate
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val repo = getItem(position)
-        holder.bind(repo)
-    }
-
+    override fun getViewHolder(binding: ItemDisableAppBinding) = DisableHolder(binding)
 }
