@@ -1,17 +1,12 @@
 package com.connor.fuckcolorapp.ui.fragment
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentAllAppsBinding
-import com.connor.fuckcolorapp.extension.logCat
+import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.extension.repeatOnStart
 import com.connor.fuckcolorapp.states.onAll
 import com.connor.fuckcolorapp.states.onAllLoaded
@@ -24,33 +19,22 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AllAppsFragment : Fragment() {
+class AllAppsFragment : BaseFragment<FragmentAllAppsBinding>() {
 
-    @Inject
-    lateinit var app: App
-
-    @Inject
-    lateinit var appListAdapter: AppListAdapter
-
-    @Inject
-    lateinit var headerAdapter: HeaderAdapter
-
-    @Inject
-    lateinit var footerAdapter: FooterAdapter
+    @Inject lateinit var app: App
+    @Inject lateinit var appListAdapter: AppListAdapter
+    @Inject lateinit var headerAdapter: HeaderAdapter
+    @Inject lateinit var footerAdapter: FooterAdapter
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
-    private var _binding: FragmentAllAppsBinding? = null
-    private val binding get() = _binding!!
+    override val inflater: Inflater<FragmentAllAppsBinding> get() = FragmentAllAppsBinding::inflate
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAllAppsBinding.inflate(inflater, container, false)
+    override fun initData() {}
+
+    override fun initView() {
         initUI()
         initScope()
-        return binding.root
     }
 
     private fun initUI() {
@@ -92,10 +76,4 @@ class AllAppsFragment : Fragment() {
             }
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
 }

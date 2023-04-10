@@ -41,6 +41,7 @@ class AppListAdapter @Inject constructor(@ActivityContext private val context: C
                 }
             }
         }
+
         override fun bind(data: AppInfo) {
             binding.m = data
             binding.imgIcon.load(data.icon)

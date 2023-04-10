@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentSystemAppBinding
+import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.repeatOnStart
 import com.connor.fuckcolorapp.states.onAll
@@ -24,30 +25,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SystemAppFragment : Fragment() {
+class SystemAppFragment : BaseFragment<FragmentSystemAppBinding>() {
 
-    @Inject
-    lateinit var app: App
-    @Inject
-    lateinit var appListAdapter: AppListAdapter
-    @Inject
-    lateinit var headerAdapter: HeaderAdapter
-    @Inject
-    lateinit var footerAdapter: FooterAdapter
+    @Inject lateinit var app: App
+    @Inject lateinit var appListAdapter: AppListAdapter
+    @Inject lateinit var headerAdapter: HeaderAdapter
+    @Inject lateinit var footerAdapter: FooterAdapter
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
-    private var _binding: FragmentSystemAppBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSystemAppBinding.inflate(inflater, container, false)
+    override val inflater: Inflater<FragmentSystemAppBinding> get() = FragmentSystemAppBinding::inflate
+    override fun initData() {}
+    override fun initView() {
         initUI()
         initScope()
-        return binding.root
     }
 
     private fun initUI() {
@@ -89,10 +80,5 @@ class SystemAppFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

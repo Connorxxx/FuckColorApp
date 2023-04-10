@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentDisableBinding
+import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.repeatOnStart
 import com.connor.fuckcolorapp.states.onAll
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DisableFragment : Fragment() {
+class DisableFragment : BaseFragment<FragmentDisableBinding>() {
 
     @Inject
     lateinit var app: App
@@ -30,18 +31,14 @@ class DisableFragment : Fragment() {
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
-    private var _binding: FragmentDisableBinding? = null
-    private val binding get() = _binding!!
+    override val inflater: Inflater<FragmentDisableBinding> get() = FragmentDisableBinding::inflate
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentDisableBinding.inflate(inflater, container, false)
+    override fun initData() {}
+    override fun initView() {
         initUI()
         initScope()
-        return binding.root
     }
+
 
     private fun initUI() {
         with(binding.rvDisable) {
@@ -82,10 +79,5 @@ class DisableFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }
