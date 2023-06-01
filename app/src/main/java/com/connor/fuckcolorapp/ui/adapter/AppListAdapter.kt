@@ -15,9 +15,13 @@ import javax.inject.Inject
 
 @FragmentScoped
 class AppListAdapter @Inject constructor(@ActivityContext private val context: Context) :
-    BaseAdapter<AppInfo, ItemAppInfoBinding>(InfoDiffCallback) {
+    BaseAdapter<AppInfo, ItemAppInfoBinding>(
+        itemTheSame = { oldItem, newItem -> oldItem.packageName == newItem.packageName },
+        contentsTheSame = { oldItem, newItem -> oldItem == newItem },
+        inflater = ItemAppInfoBinding::inflate
+    ) {
 
-    override val inflater: Inflater<ItemAppInfoBinding> get() = ItemAppInfoBinding::inflate
+    //override val inflater: Inflater<ItemAppInfoBinding> get() = ItemAppInfoBinding::inflate
 
     override fun getViewHolder(binding: ItemAppInfoBinding) = ViewHolder(binding)
 

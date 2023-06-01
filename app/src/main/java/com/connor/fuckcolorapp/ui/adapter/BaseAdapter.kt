@@ -2,17 +2,20 @@ package com.connor.fuckcolorapp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.connor.fuckcolorapp.extension.Inflater
-import com.connor.fuckcolorapp.extension.logCat
-import com.connor.fuckcolorapp.models.AppInfo
 
-abstract class BaseAdapter<T, VB: ViewBinding>(config: DiffUtil.ItemCallback<T>) :
-    ListAdapter<T, BaseAdapter<T, VB>.BaseViewHolder>(config) {
+abstract class BaseAdapter<T : Any, VB : ViewBinding>(
+    private val itemTheSame: (T, T) -> Boolean,
+    private val contentsTheSame: (T, T) -> Boolean,
+    val inflater: Inflater<VB>
+) : ListAdapter<T, BaseAdapter<T, VB>.BaseViewHolder>(object : DiffUtil.ItemCallback<T>() {
+    override fun areItemsTheSame(oldItem: T, newItem: T) = itemTheSame(oldItem, newItem)
+    override fun areContentsTheSame(oldItem: T, newItem: T) = contentsTheSame(oldItem, newItem)
+}) {
 
     protected var listener: ((T) -> Unit)? = null
 
@@ -20,7 +23,7 @@ abstract class BaseAdapter<T, VB: ViewBinding>(config: DiffUtil.ItemCallback<T>)
         listener = l
     }
 
-    protected abstract val inflater: Inflater<VB>
+    //protected abstract val inflater: Inflater<VB>
 
     protected abstract fun getViewHolder(binding: VB): BaseViewHolder
 
@@ -36,6 +39,9 @@ abstract class BaseAdapter<T, VB: ViewBinding>(config: DiffUtil.ItemCallback<T>)
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         getItem(position)?.let { model ->
             holder.bind(model)
+//            listener?.let {
+//                holder.itemView.setOnClickListener { it(model) }
+//            }
         }
     }
 }

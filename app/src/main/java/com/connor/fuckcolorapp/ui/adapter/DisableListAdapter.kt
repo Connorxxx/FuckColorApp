@@ -14,9 +14,12 @@ import javax.inject.Inject
 
 @FragmentScoped
 class DisableListAdapter @Inject constructor(@ActivityContext val context: Context) :
-    BaseAdapter<AppInfo, ItemDisableAppBinding>(InfoDiffCallback) {
-
-    override val inflater: Inflater<ItemDisableAppBinding> get() = ItemDisableAppBinding::inflate
+    BaseAdapter<AppInfo, ItemDisableAppBinding>(
+        itemTheSame = { oldItem, newItem -> oldItem.packageName == newItem.packageName },
+        contentsTheSame = { oldItem, newItem -> oldItem == newItem },
+        inflater = ItemDisableAppBinding::inflate
+    ) {
+    //override val inflater: Inflater<ItemDisableAppBinding> get() = ItemDisableAppBinding::inflate
 
     override fun getViewHolder(binding: ItemDisableAppBinding) = DisableHolder(binding)
 
