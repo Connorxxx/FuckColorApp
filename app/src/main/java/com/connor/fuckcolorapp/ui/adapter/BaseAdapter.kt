@@ -11,7 +11,7 @@ import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.models.AppInfo
 
-abstract class BaseAdapter<T: Any, VB: ViewBinding>(config: DiffUtil.ItemCallback<T>) :
+abstract class BaseAdapter<T, VB: ViewBinding>(config: DiffUtil.ItemCallback<T>) :
     ListAdapter<T, BaseAdapter<T, VB>.BaseViewHolder>(config) {
 
     protected var listener: ((T) -> Unit)? = null

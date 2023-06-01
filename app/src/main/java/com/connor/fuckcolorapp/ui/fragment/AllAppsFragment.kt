@@ -8,6 +8,7 @@ import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentAllAppsBinding
 import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.extension.repeatOnStart
+import com.connor.fuckcolorapp.extension.viewBinding
 import com.connor.fuckcolorapp.states.onAll
 import com.connor.fuckcolorapp.states.onAllLoaded
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
@@ -28,7 +29,7 @@ class AllAppsFragment : BaseFragment<FragmentAllAppsBinding>() {
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
-    override val inflater: Inflater<FragmentAllAppsBinding> get() = FragmentAllAppsBinding::inflate
+    override val binding by viewBinding<FragmentAllAppsBinding>()
 
     override fun initData() {}
 
@@ -38,6 +39,7 @@ class AllAppsFragment : BaseFragment<FragmentAllAppsBinding>() {
     }
 
     private fun initUI() {
+
         with(binding.rvAll) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = ConcatAdapter(headerAdapter, appListAdapter, footerAdapter)

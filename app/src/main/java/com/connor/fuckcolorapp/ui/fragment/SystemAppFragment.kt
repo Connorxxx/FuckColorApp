@@ -1,19 +1,14 @@
 package com.connor.fuckcolorapp.ui.fragment
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentSystemAppBinding
 import com.connor.fuckcolorapp.extension.Inflater
-import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.repeatOnStart
+import com.connor.fuckcolorapp.extension.viewBinding
 import com.connor.fuckcolorapp.states.onAll
 import com.connor.fuckcolorapp.states.onSystemLoaded
 import com.connor.fuckcolorapp.ui.adapter.AppListAdapter
@@ -34,7 +29,7 @@ class SystemAppFragment : BaseFragment<FragmentSystemAppBinding>() {
 
     private val viewModel by activityViewModels<AppsViewModel>()
 
-    override val inflater: Inflater<FragmentSystemAppBinding> get() = FragmentSystemAppBinding::inflate
+    override val binding: FragmentSystemAppBinding by viewBinding()
     override fun initData() {}
     override fun initView() {
         initUI()

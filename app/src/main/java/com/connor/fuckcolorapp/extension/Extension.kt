@@ -12,10 +12,11 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.viewbinding.ViewBinding
 import com.connor.fuckcolorapp.BuildConfig
+import com.connor.fuckcolorapp.delegates.ViewBindingDelegate
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -79,3 +80,6 @@ inline fun Fragment.repeatOnStart(crossinline block: CoroutineScope.() -> Unit) 
         }
     }
 }
+
+inline fun <reified T : ViewBinding> Fragment.viewBinding() =
+    ViewBindingDelegate(T::class.java, this)
