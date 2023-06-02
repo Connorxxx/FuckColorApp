@@ -16,10 +16,9 @@ import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.ActivityAppsBinding
 import com.connor.fuckcolorapp.extension.*
 import com.connor.fuckcolorapp.services.PackageService
-import com.connor.fuckcolorapp.ui.adapter.TabPagerAdapter
 import com.connor.fuckcolorapp.states.CheckError
-import com.connor.fuckcolorapp.states.Empty
 import com.connor.fuckcolorapp.states.PureApp
+import com.connor.fuckcolorapp.ui.adapter.TabPagerAdapter
 import com.connor.fuckcolorapp.utils.subscribe
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import com.google.android.material.tabs.TabLayout
@@ -81,7 +80,6 @@ class AppsActivity : AppCompatActivity() {
                                 binding.fabPure.isEnabled = true
                                 viewModel.getAppsList()
                             }
-                            is Empty ->{ }
                         }
                     }
                 }

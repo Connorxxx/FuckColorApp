@@ -6,8 +6,6 @@ import android.net.Uri
 import coil.load
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.databinding.ItemAppInfoBinding
-import com.connor.fuckcolorapp.extension.Inflater
-import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.models.AppInfo
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.FragmentScoped

@@ -4,5 +4,3 @@ sealed interface Event
 
 data class CheckError(val msg: String) : Event
 object PureApp : Event
-
-object Empty : Event

@@ -15,17 +15,13 @@ import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.extension.startActivity
 import com.connor.fuckcolorapp.extension.startService
 import com.connor.fuckcolorapp.services.PackageService
+import com.connor.fuckcolorapp.states.CheckError
+import com.connor.fuckcolorapp.states.PureApp
 import com.connor.fuckcolorapp.ui.AppsActivity
 import com.connor.fuckcolorapp.ui.dialog.AlertDialogFragment
-import com.connor.fuckcolorapp.states.CheckError
-import com.connor.fuckcolorapp.states.Empty
-import com.connor.fuckcolorapp.states.PureApp
-import com.connor.fuckcolorapp.utils.post
-import com.connor.fuckcolorapp.utils.postWithStick
 import com.connor.fuckcolorapp.utils.subscribe
 import com.connor.fuckcolorapp.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -112,7 +108,6 @@ class MainActivity : AppCompatActivity() {
                                 binding.cardStart.isEnabled = true
                                 binding.tvHead.text = getString(R.string.finish)
                             }
-                            is Empty -> {}
                         }
                     }
                 }
