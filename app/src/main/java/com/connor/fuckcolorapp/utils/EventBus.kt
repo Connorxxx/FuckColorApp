@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.withContext
 
 val eventBus = MutableSharedFlow<Event>()
-val stickEvent = MutableSharedFlow<Event>()
+val stickEvent = MutableSharedFlow<Event>(replay = 1)
 suspend fun subscribe(block: suspend (Event) -> Unit) {
     eventBus.zip(stickEvent) { a, b -> getNotEmpty(a, b) }.collect(block)
 }
