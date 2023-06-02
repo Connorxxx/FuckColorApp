@@ -8,14 +8,14 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
-import com.connor.core.emitEvent
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.BuildConfig
 import com.connor.fuckcolorapp.R
 import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.consts.Consts.MATCH_UNINSTALLED
-import com.connor.fuckcolorapp.extension.logCat
+import com.connor.fuckcolorapp.states.CheckError
 import com.connor.fuckcolorapp.utils.TargetApi
+import com.connor.fuckcolorapp.utils.post
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -90,27 +90,41 @@ class Repository @Inject constructor(
         }.getOrElse { false }  //Il0O
     } ?: false
 
-    suspend fun getUserAppList(value: CharSequence = "") = queryPackage().filter { !it.isSystemApp }.also { query ->
-        app.userAppList.clear()
-        query.forEach {
-            val label = it.loadLabel(pm)
-            if (label.contains(value)) {
-                app.userAppList.add(AppInfo(label, it.activityInfo.packageName, it.loadIcon(pm)))
+    suspend fun getUserAppList(value: CharSequence = "") =
+        queryPackage().filter { !it.isSystemApp }.also { query ->
+            app.userAppList.clear()
+            query.forEach {
+                val label = it.loadLabel(pm)
+                if (label.contains(value)) {
+                    app.userAppList.add(
+                        AppInfo(
+                            label,
+                            it.activityInfo.packageName,
+                            it.loadIcon(pm)
+                        )
+                    )
+                }
             }
+            app.userAppList.sortBy { list -> list.label.toString() }
         }
-        app.userAppList.sortBy { list -> list.label.toString() }
-    }
 
-    suspend fun getSystemAppList(value: CharSequence = "") = queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
-        app.systemAppList.clear()
-        query.forEach {
-            val label = it.loadLabel(pm)
-            if (label.contains(value)) {
-                app.systemAppList.add(AppInfo(label, it.activityInfo.packageName, it.loadIcon(pm)))
+    suspend fun getSystemAppList(value: CharSequence = "") =
+        queryPackage(PackageManager.MATCH_SYSTEM_ONLY).also { query ->
+            app.systemAppList.clear()
+            query.forEach {
+                val label = it.loadLabel(pm)
+                if (label.contains(value)) {
+                    app.systemAppList.add(
+                        AppInfo(
+                            label,
+                            it.activityInfo.packageName,
+                            it.loadIcon(pm)
+                        )
+                    )
+                }
             }
+            app.systemAppList.sortBy { list -> list.label.toString() }
         }
-        app.systemAppList.sortBy { list -> list.label.toString() }
-    }
 
     suspend fun getAllAppList(value: CharSequence = "") = queryInstalledPackages().also { query ->
         app.allAppList.clear()
@@ -129,7 +143,13 @@ class Repository @Inject constructor(
             val label = it.applicationInfo.loadLabel(pm)
             if (isDisabled(it.packageName)) {
                 if (label.contains(value)) {
-                    app.disableList.add(AppInfo(label, it.packageName, it.applicationInfo.loadIcon(pm)))
+                    app.disableList.add(
+                        AppInfo(
+                            label,
+                            it.packageName,
+                            it.applicationInfo.loadIcon(pm)
+                        )
+                    )
                 }
             }
         }
@@ -147,58 +167,57 @@ class Repository @Inject constructor(
         true
     }.getOrElse { false }
 
-private suspend fun queryPackage(flags: Int = MATCH_UNINSTALLED): MutableList<ResolveInfo> =
-    withContext(Dispatchers.IO) {
-        val i = Intent(Intent.ACTION_MAIN, null)
-        i.addCategory(Intent.CATEGORY_LAUNCHER)
-        if (TargetApi.T) {
-            pm.queryIntentActivities(
-                i,
-                PackageManager.ResolveInfoFlags.of(flags.toLong())
-            )
-        } else {
-            pm.queryIntentActivities(i, flags)
-        }
-    }
-
-private suspend fun queryInstalledPackages(flags: Int = PackageManager.MATCH_ALL): List<PackageInfo> =
-    withContext(Dispatchers.IO) {
-        if (TargetApi.T) {
-            pm.getInstalledPackages(
-                PackageManager.PackageInfoFlags.of(
-                    flags.toLong()
+    private suspend fun queryPackage(flags: Int = MATCH_UNINSTALLED): MutableList<ResolveInfo> =
+        withContext(Dispatchers.IO) {
+            val i = Intent(Intent.ACTION_MAIN, null)
+            i.addCategory(Intent.CATEGORY_LAUNCHER)
+            if (TargetApi.T) {
+                pm.queryIntentActivities(
+                    i,
+                    PackageManager.ResolveInfoFlags.of(flags.toLong())
                 )
+            } else {
+                pm.queryIntentActivities(i, flags)
+            }
+        }
+
+    private suspend fun queryInstalledPackages(flags: Int = PackageManager.MATCH_ALL): List<PackageInfo> =
+        withContext(Dispatchers.IO) {
+            if (TargetApi.T) {
+                pm.getInstalledPackages(
+                    PackageManager.PackageInfoFlags.of(
+                        flags.toLong()
+                    )
+                )
+            } else pm.getInstalledPackages(flags)
+        }
+
+
+    private fun asInterface(className: String, serviceName: String): Any =
+        ShizukuBinderWrapper(SystemServiceHelper.getSystemService(serviceName)).let {
+            Class.forName("$className\$Stub").run {
+                getMethod("asInterface", IBinder::class.java).invoke(null, it)
+            }
+        }
+
+    private fun isDisabled(packageName: String) =
+        getPackageInfoOrNull(packageName)?.applicationInfo?.enabled?.not() ?: false
+
+    private fun getPackageInfoOrNull(packageName: String, flags: Int = Consts.MATCH_UNINSTALLED) =
+        runCatching {
+            if (TargetApi.T) context.packageManager.getPackageInfo(
+                packageName,
+                PackageManager.PackageInfoFlags.of(flags.toLong())
             )
-        } else pm.getInstalledPackages(flags)
-    }
+            else context.packageManager.getPackageInfo(packageName, flags)
+        }.getOrNull()
 
 
-private fun asInterface(className: String, serviceName: String): Any =
-    ShizukuBinderWrapper(SystemServiceHelper.getSystemService(serviceName)).let {
-        Class.forName("$className\$Stub").run {
-            getMethod("asInterface", IBinder::class.java).invoke(null, it)
+    suspend inline fun checkShizuku(block: () -> Unit) {
+        checkPermission().also {
+            if (!it && !BuildConfig.DEBUG) {
+                post(CheckError(context.getString(R.string.error)))
+            } else block()
         }
     }
-
-private fun isDisabled(packageName: String) =
-    getPackageInfoOrNull(packageName)?.applicationInfo?.enabled?.not() ?: false
-
-private fun getPackageInfoOrNull(packageName: String, flags: Int = Consts.MATCH_UNINSTALLED) =
-    runCatching {
-        if (TargetApi.T) context.packageManager.getPackageInfo(
-            packageName,
-            PackageManager.PackageInfoFlags.of(flags.toLong())
-        )
-        else context.packageManager.getPackageInfo(packageName, flags)
-    }.getOrNull()
-
-
-inline fun <T> checkShizuku(block: () -> T): T? {
-    checkPermission().also {
-        if (!it && !BuildConfig.DEBUG) {
-            emitEvent(context.getString(R.string.error), Consts.CHECK_FALSE)
-        } else return block()
-    }
-    return null
-}
 }

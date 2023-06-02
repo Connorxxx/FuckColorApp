@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentAllAppsBinding
-import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.extension.repeatOnStart
 import com.connor.fuckcolorapp.extension.viewBinding
 import com.connor.fuckcolorapp.states.onAll

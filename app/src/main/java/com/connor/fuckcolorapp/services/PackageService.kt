@@ -9,13 +9,12 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import com.connor.core.emitEvent
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.MainActivity
 import com.connor.fuckcolorapp.R
-import com.connor.fuckcolorapp.consts.Consts
-import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.models.Repository
+import com.connor.fuckcolorapp.states.PureApp
+import com.connor.fuckcolorapp.utils.post
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -98,7 +97,7 @@ class PackageService : LifecycleService() {
                 }
             }
             withContext(Dispatchers.Main) {
-                emitEvent("Finish", Consts.PURE_APP)
+                post(PureApp)
                 stopSelf()
             }
         }

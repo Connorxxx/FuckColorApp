@@ -9,17 +9,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.load
-import com.connor.core.receiveEvent
-import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.databinding.ActivityMainBinding
 import com.connor.fuckcolorapp.datastore.DataStoreManager
-import com.connor.fuckcolorapp.extension.logCat
 import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.extension.startActivity
 import com.connor.fuckcolorapp.extension.startService
 import com.connor.fuckcolorapp.services.PackageService
 import com.connor.fuckcolorapp.ui.AppsActivity
 import com.connor.fuckcolorapp.ui.dialog.AlertDialogFragment
+import com.connor.fuckcolorapp.states.CheckError
+import com.connor.fuckcolorapp.states.PureApp
+import com.connor.fuckcolorapp.utils.subscribe
 import com.connor.fuckcolorapp.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -79,24 +79,30 @@ class MainActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                dataStoreManager.pureFlow.collect {
-                    if (it) {
-                        binding.imgHead.load(R.drawable.check_circle)
-                        binding.tvHead.text = getString(R.string.finish)
-                    } else {
-                        binding.imgHead.load(R.drawable.play_circle)
-                        binding.tvHead.text = getString(R.string.start)
+                launch {
+                    dataStoreManager.pureFlow.collect {
+                        if (it) {
+                            binding.imgHead.load(R.drawable.check_circle)
+                            binding.tvHead.text = getString(R.string.finish)
+                        } else {
+                            binding.imgHead.load(R.drawable.play_circle)
+                            binding.tvHead.text = getString(R.string.start)
+                        }
+                    }
+                }
+                launch {
+                    subscribe {
+                        when (it) {
+                            is CheckError -> showToast(it.msg)
+                            is PureApp -> {
+                                dataStoreManager.storePureState(true)
+                                binding.cardStart.isEnabled = true
+                                binding.tvHead.text = getString(R.string.finish)
+                            }
+                        }
                     }
                 }
             }
-        }
-        receiveEvent<String>(Consts.PURE_APP) {
-            dataStoreManager.storePureState(true)
-            binding.cardStart.isEnabled = true
-            binding.tvHead.text = getString(R.string.finish)
-        }
-        receiveEvent<String>(Consts.CHECK_FALSE) {
-            showToast(it)
         }
     }
 }

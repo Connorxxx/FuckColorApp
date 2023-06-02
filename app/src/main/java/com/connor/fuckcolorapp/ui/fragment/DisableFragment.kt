@@ -5,7 +5,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.fuckcolorapp.App
 import com.connor.fuckcolorapp.databinding.FragmentDisableBinding
-import com.connor.fuckcolorapp.extension.Inflater
 import com.connor.fuckcolorapp.extension.repeatOnStart
 import com.connor.fuckcolorapp.extension.viewBinding
 import com.connor.fuckcolorapp.states.onAll

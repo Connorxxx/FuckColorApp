@@ -1,27 +1,25 @@
 package com.connor.fuckcolorapp.ui
 
-import android.R.attr.visible
 import android.content.Context
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.core.view.size
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.load
-import com.connor.core.receiveEvent
 import com.connor.fuckcolorapp.R
-import com.connor.fuckcolorapp.consts.Consts
 import com.connor.fuckcolorapp.databinding.ActivityAppsBinding
 import com.connor.fuckcolorapp.extension.*
 import com.connor.fuckcolorapp.services.PackageService
 import com.connor.fuckcolorapp.ui.adapter.TabPagerAdapter
+import com.connor.fuckcolorapp.states.CheckError
+import com.connor.fuckcolorapp.states.PureApp
+import com.connor.fuckcolorapp.utils.subscribe
 import com.connor.fuckcolorapp.viewmodels.AppsViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -51,7 +49,6 @@ class AppsActivity : AppCompatActivity() {
         }
         initTab()
         initClick()
-        initShare()
         initScope()
         initBackPressed()
     }
@@ -75,17 +72,18 @@ class AppsActivity : AppCompatActivity() {
                         viewModel.queryAll(it)
                     }
                 }
+                launch {
+                    subscribe {
+                        when (it) {
+                            is CheckError -> showToast(it.msg)
+                            is PureApp -> {
+                                binding.fabPure.isEnabled = true
+                                viewModel.getAppsList()
+                            }
+                        }
+                    }
+                }
             }
-        }
-    }
-
-    private fun initShare() {
-        receiveEvent<String>(Consts.PURE_APP) {
-            binding.fabPure.isEnabled = true
-            viewModel.getAppsList()
-        }
-        receiveEvent<String>(Consts.CHECK_FALSE) {
-            showToast(it)
         }
     }
 
