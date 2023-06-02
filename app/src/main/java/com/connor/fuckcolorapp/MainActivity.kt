@@ -18,6 +18,7 @@ import com.connor.fuckcolorapp.services.PackageService
 import com.connor.fuckcolorapp.ui.AppsActivity
 import com.connor.fuckcolorapp.ui.dialog.AlertDialogFragment
 import com.connor.fuckcolorapp.states.CheckError
+import com.connor.fuckcolorapp.states.Empty
 import com.connor.fuckcolorapp.states.PureApp
 import com.connor.fuckcolorapp.utils.subscribe
 import com.connor.fuckcolorapp.viewmodels.MainViewModel
@@ -99,6 +100,7 @@ class MainActivity : AppCompatActivity() {
                                 binding.cardStart.isEnabled = true
                                 binding.tvHead.text = getString(R.string.finish)
                             }
+                            is Empty ->{ }
                         }
                     }
                 }
