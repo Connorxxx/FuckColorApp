@@ -20,9 +20,12 @@ import com.connor.fuckcolorapp.ui.dialog.AlertDialogFragment
 import com.connor.fuckcolorapp.states.CheckError
 import com.connor.fuckcolorapp.states.Empty
 import com.connor.fuckcolorapp.states.PureApp
+import com.connor.fuckcolorapp.utils.post
+import com.connor.fuckcolorapp.utils.postWithStick
 import com.connor.fuckcolorapp.utils.subscribe
 import com.connor.fuckcolorapp.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,7 +45,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.cardStart.setOnClickListener {
-            AlertDialogFragment(getString(R.string.warning), getString(R.string.head_tips), getString(R.string.confirm), true) {
+            AlertDialogFragment(
+                getString(R.string.warning),
+                getString(R.string.head_tips),
+                getString(R.string.confirm),
+                true
+            ) {
                 viewModel.checkShizuku {
                     binding.tvHead.text = getString(R.string.running)
                     binding.cardStart.isEnabled = false
@@ -75,7 +83,11 @@ class MainActivity : AppCompatActivity() {
             ) { }.show(supportFragmentManager, AlertDialogFragment.TAG)
         }
         binding.layoutAbout.setOnClickListener {
-            AlertDialogFragment(getString(R.string.app_name), BuildConfig.VERSION_NAME, getString(R.string.ok)) { }
+            AlertDialogFragment(
+                getString(R.string.app_name),
+                BuildConfig.VERSION_NAME,
+                getString(R.string.ok)
+            ) { }
                 .show(supportFragmentManager, AlertDialogFragment.TAG)
         }
         lifecycleScope.launch {
@@ -100,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                                 binding.cardStart.isEnabled = true
                                 binding.tvHead.text = getString(R.string.finish)
                             }
-                            is Empty ->{ }
+                            is Empty -> {}
                         }
                     }
                 }
