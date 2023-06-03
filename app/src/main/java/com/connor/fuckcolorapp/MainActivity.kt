@@ -40,6 +40,41 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        initClick()
+        initScope()
+    }
+
+    private fun initScope() {
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    dataStoreManager.pureFlow.collect {
+                        if (it) {
+                            binding.imgHead.load(R.drawable.check_circle)
+                            binding.tvHead.text = getString(R.string.finish)
+                        } else {
+                            binding.imgHead.load(R.drawable.play_circle)
+                            binding.tvHead.text = getString(R.string.start)
+                        }
+                    }
+                }
+                launch {
+                    subscribe {
+                        when (it) {
+                            is CheckError -> showToast(it.msg)
+                            is PureApp -> {
+                                dataStoreManager.storePureState(true)
+                                binding.cardStart.isEnabled = true
+                                binding.tvHead.text = getString(R.string.finish)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun initClick() {
         binding.cardStart.setOnClickListener {
             AlertDialogFragment(
                 getString(R.string.warning),
@@ -85,33 +120,6 @@ class MainActivity : AppCompatActivity() {
                 getString(R.string.ok)
             ) { }
                 .show(supportFragmentManager, AlertDialogFragment.TAG)
-        }
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    dataStoreManager.pureFlow.collect {
-                        if (it) {
-                            binding.imgHead.load(R.drawable.check_circle)
-                            binding.tvHead.text = getString(R.string.finish)
-                        } else {
-                            binding.imgHead.load(R.drawable.play_circle)
-                            binding.tvHead.text = getString(R.string.start)
-                        }
-                    }
-                }
-                launch {
-                    subscribe {
-                        when (it) {
-                            is CheckError -> showToast(it.msg)
-                            is PureApp -> {
-                                dataStoreManager.storePureState(true)
-                                binding.cardStart.isEnabled = true
-                                binding.tvHead.text = getString(R.string.finish)
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
