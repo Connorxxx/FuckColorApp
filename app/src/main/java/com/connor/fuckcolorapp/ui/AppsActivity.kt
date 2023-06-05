@@ -73,14 +73,12 @@ class AppsActivity : AppCompatActivity() {
                     }
                 }
                 launch {
-                    subscribe {
-                        when (it) {
-                            is CheckError -> showToast(it.msg)
-                            is PureApp -> {
-                                binding.fabPure.isEnabled = true
-                                viewModel.getAppsList()
-                            }
-                        }
+                    subscribe<CheckError> {
+                        showToast(it.msg)
+                    }
+                    subscribe<PureApp> {
+                        binding.fabPure.isEnabled = true
+                        viewModel.getAppsList()
                     }
                 }
             }

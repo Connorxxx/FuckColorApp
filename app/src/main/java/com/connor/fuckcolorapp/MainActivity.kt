@@ -15,10 +15,10 @@ import com.connor.fuckcolorapp.extension.showToast
 import com.connor.fuckcolorapp.extension.startActivity
 import com.connor.fuckcolorapp.extension.startService
 import com.connor.fuckcolorapp.services.PackageService
-import com.connor.fuckcolorapp.states.CheckError
-import com.connor.fuckcolorapp.states.PureApp
+import com.connor.fuckcolorapp.states.*
 import com.connor.fuckcolorapp.ui.AppsActivity
 import com.connor.fuckcolorapp.ui.dialog.AlertDialogFragment
+import com.connor.fuckcolorapp.utils.post
 import com.connor.fuckcolorapp.utils.subscribe
 import com.connor.fuckcolorapp.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,17 +58,11 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-                launch {
-                    subscribe {
-                        when (it) {
-                            is CheckError -> showToast(it.msg)
-                            is PureApp -> {
-                                dataStoreManager.storePureState(true)
-                                binding.cardStart.isEnabled = true
-                                binding.tvHead.text = getString(R.string.finish)
-                            }
-                        }
-                    }
+                subscribe<CheckError> { showToast(it.msg) }
+                subscribe<PureApp> {
+                    dataStoreManager.storePureState(true)
+                    binding.cardStart.isEnabled = true
+                    binding.tvHead.text = getString(R.string.finish)
                 }
             }
         }
