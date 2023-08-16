@@ -5,8 +5,6 @@ import androidx.lifecycle.lifecycleScope
 import com.connor.fuckcolorapp.states.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @PublishedApi

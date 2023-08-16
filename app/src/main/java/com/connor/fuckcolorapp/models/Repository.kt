@@ -1,5 +1,6 @@
 package com.connor.fuckcolorapp.models
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -167,6 +168,7 @@ class Repository @Inject constructor(
         true
     }.getOrElse { false }
 
+    @SuppressLint("NewApi")
     private suspend fun queryPackage(flags: Int = MATCH_UNINSTALLED): MutableList<ResolveInfo> =
         withContext(Dispatchers.IO) {
             val i = Intent(Intent.ACTION_MAIN, null)
@@ -181,6 +183,7 @@ class Repository @Inject constructor(
             }
         }
 
+    @SuppressLint("NewApi")
     private suspend fun queryInstalledPackages(flags: Int = PackageManager.MATCH_ALL): List<PackageInfo> =
         withContext(Dispatchers.IO) {
             if (TargetApi.T) {
@@ -203,6 +206,7 @@ class Repository @Inject constructor(
     private fun isDisabled(packageName: String) =
         getPackageInfoOrNull(packageName)?.applicationInfo?.enabled?.not() ?: false
 
+    @SuppressLint("NewApi")
     private fun getPackageInfoOrNull(packageName: String, flags: Int = Consts.MATCH_UNINSTALLED) =
         runCatching {
             if (TargetApi.T) context.packageManager.getPackageInfo(
